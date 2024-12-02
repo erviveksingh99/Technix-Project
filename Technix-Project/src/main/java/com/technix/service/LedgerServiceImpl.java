@@ -11,11 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class LedgerServiceImpl implements LedgerService {
@@ -29,11 +27,11 @@ public class LedgerServiceImpl implements LedgerService {
     @Override
     public ResponseEntity<Ledger> createLedger(Ledger ledger) {
         try {
-            Optional<Account> account = accountRepo.findByAccountId(ledger.getAccountId());
+            Optional<Account> account = accountRepo.findByAccountId(ledger.getAccount_id());
             if (account.isPresent()) {
                 Account account1 = account.get();
                 ledger.setAccountNature(account1.getAccountNature());
-                ledger.setAccount(account1.getAccount());
+                ledger.setAccount(account1.getAccounts());
             } else {
                 throw new IdNotFoundException("Account id is invalid");
             }
@@ -54,11 +52,11 @@ public class LedgerServiceImpl implements LedgerService {
             // Copy non-null properties from the incoming bankDetails to the existing one
             BeanUtils.copyProperties(ledger, updateLedger, "createdAt", "accountNature", "account"); // Exclude fields like id, createdAt if necessary
 
-            Optional<Account> account = accountRepo.findByAccountId(ledger.getAccountId());
+            Optional<Account> account = accountRepo.findByAccountId(ledger.getAccount_id());
             if (account.isPresent()) {
                 Account account1 = account.get();
                 updateLedger.setAccountNature(account1.getAccountNature());
-                updateLedger.setAccount(account1.getAccount());
+                updateLedger.setAccount(account1.getAccounts());
             } else {
                 throw new IdNotFoundException("Account id is invalid");
             }
@@ -84,7 +82,8 @@ public class LedgerServiceImpl implements LedgerService {
         if (!ledgerList.isEmpty()) {
             return ResponseEntity.ok(ledgerList);
         } else {
-            throw new IdNotFoundException("Id not found");
+            return ResponseEntity.ok(ledgerList);
+            //  throw new IdNotFoundException("Id not found");
         }
     }
 

@@ -9,5 +9,5 @@ import java.util.List;
 public interface LedgerRepository extends JpaRepository<Ledger, Integer> {
     List<Ledger> findByCompanyId(int companyId);
 
-    List<Ledger> findByAccountId(int accountId);
+//    List<Ledger> findByAccountId(int accountId);
 }

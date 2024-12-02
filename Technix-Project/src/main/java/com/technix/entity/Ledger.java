@@ -1,8 +1,10 @@
 package com.technix.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Data
@@ -23,7 +25,7 @@ public class Ledger {
     private int companyId;
 
     private String ledgerName;
-    private int accountId;
+    private int account_id;
     private String account;
     private String accountNature;
     private int orderByNumber;
@@ -31,5 +33,18 @@ public class Ledger {
     private boolean isActive;
     private boolean systemDefault;
     private int createdBy;
+
+    /*@JsonIgnore
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", referencedColumnName = "account_id", nullable = true, insertable = false, updatable = false)
+    private Account accounts;*/
+
+   // @JsonIgnore
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", referencedColumnName = "account_id", nullable = true, insertable = false, updatable = false)
+    private Account accounts;
+
     private LocalDateTime createdAt;
 }
