@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.technix.entity.enums.ContactsType;
 import jakarta.persistence.*;
 import lombok.Data;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -14,12 +15,11 @@ public class Contacts {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int contactId;
 
-    // Many brands can be associated with one company
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)  // Lazy loading to improve performance
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", referencedColumnName = "company_id", insertable = false, updatable = false)
-    // Foreign key reference
-    private Company company;  // Reference to Company entity
+
+    private Company company;
 
     @Column(name = "company_id", insertable = true, updatable = true)
     private int companyId;
@@ -73,4 +73,6 @@ public class Contacts {
     private double partyDiscPer;
     private String customerType;
     private String remarks;
+    private  int createdBy;
+    private LocalDateTime createdAt;
 }

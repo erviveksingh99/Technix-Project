@@ -2,7 +2,6 @@ package com.technix.service;
 
 import com.technix.entity.Contacts;
 import org.springframework.http.ResponseEntity;
-
 import java.util.List;
 import java.util.Map;
 

@@ -1,13 +1,18 @@
 package com.technix.service;
 
 import com.technix.custome.IdNotFoundException;
+import com.technix.entity.Account;
 import com.technix.entity.Contacts;
+import com.technix.entity.Ledger;
+import com.technix.repository.AccountRepository;
 import com.technix.repository.ContactsRepository;
+import com.technix.repository.LedgerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,9 +24,43 @@ public class ContactsServiceImpl implements ContactsService {
     @Autowired
     private ContactsRepository contactsRepo;
 
+    @Autowired
+    private AccountRepository accountRepo;
+
+    @Autowired
+    private LedgerRepository ledgerRepo;
+
+    @Autowired
+    private AccountService accountService;
+
     @Override
     public ResponseEntity<Contacts> createContacts(Contacts contacts) {
+        Optional<Account> optionalAccount = accountRepo.findById(contacts.getAccountId());
+        Account account = null;
+        if (optionalAccount.isPresent()) {
+            account = optionalAccount.get();
+        }
+        Ledger newLedger = new Ledger();
+        newLedger.setCompanyId(contacts.getCompanyId());
+        newLedger.setLedgerName(contacts.getContactName());
+        newLedger.setAccount(account.getAccounts());
+        newLedger.setAccountNature(account.getAccountNature());
+        newLedger.setAccount_id(contacts.getAccountId());
+        newLedger.setOrderByNumber(0);
+        newLedger.setTdsApplicable(contacts.isTdsApplicable() ? 1 : 0);
+        newLedger.setActive(true);
+        newLedger.setSystemDefault(false);
+        newLedger.setCreatedBy(contacts.getCreatedBy());
+        newLedger.setCreatedAt(LocalDateTime.now());
+        Ledger l1 = null;
         try {
+            l1 = ledgerRepo.save(newLedger);
+        } catch (ResponseStatusException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ledger data is not saved from the contacts entity");
+        }
+        try {
+            contacts.setCreatedAt(LocalDateTime.now());
+            contacts.setLedgerId(l1.getLedgerId());
             return ResponseEntity.ok(contactsRepo.save(contacts));
         } catch (ResponseStatusException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Database communication failed");
@@ -33,7 +72,7 @@ public class ContactsServiceImpl implements ContactsService {
         Optional<Contacts> contactsOptional = contactsRepo.findById(contactId);
         if (contactsOptional.isPresent()) {
             try {
-                Contacts contacts1=contactsOptional.get();
+                Contacts contacts1 = contactsOptional.get();
                 contacts.setContactId(contactId);
                 return ResponseEntity.ok(contactsRepo.save(contacts1));
             } catch (ResponseStatusException e) {
@@ -46,8 +85,7 @@ public class ContactsServiceImpl implements ContactsService {
 
     @Override
     public ResponseEntity<Contacts> getContactsById(int contactId) {
-        return ResponseEntity.ok(contactsRepo.findById(contactId)
-                .orElseThrow(() -> new IdNotFoundException("Id not found")));
+        return ResponseEntity.ok(contactsRepo.findById(contactId).orElseThrow(() -> new IdNotFoundException("Id not found")));
     }
 
     @Override
