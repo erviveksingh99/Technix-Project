@@ -25,7 +25,7 @@ public class AccountController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<Map<String, Object>> updateAccount(@RequestBody Account account) {
         Account accountResponse = accountService.updateAccount(account).getBody();
         Map<String, Object> response = new HashMap<>();
@@ -34,9 +34,9 @@ public class AccountController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/accountById/{accountId}")
-    public ResponseEntity<Map<String, Object>> getAccountById(@PathVariable int accountId) {
-        Account accountResponse = accountService.getAccountById(accountId).getBody();
+    @GetMapping("/accountById/{accountId}/{companyId}")
+    public ResponseEntity<Map<String, Object>> getAccountById(@PathVariable("accountId") int accountId, @PathVariable("companyId") int companyId) {
+        Account accountResponse = accountService.getAccountById(accountId, companyId).getBody();
         Map<String, Object> response = new HashMap<>();
         response.put("account", accountResponse);
         response.put("status", true);
@@ -52,9 +52,19 @@ public class AccountController {
         return ResponseEntity.ok(response);
     }
 
+    //  @CrossOrigin("/**")
     @GetMapping("/accountWithLedger/{companyId}")
     public ResponseEntity<Map<String, Object>> getAccountWithLedgerByCompanyId(@PathVariable int companyId) {
         List<Account> accountResponse = accountService.getAccountWithLedgerByCompanyId(companyId).getBody();
+        Map<String, Object> response = new HashMap<>();
+        response.put("account", accountResponse);
+        response.put("status", true);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/balancesheet/{companyId}")
+    public ResponseEntity<Map<String, Object>> getAccountWithAssetAndLiabilities(@RequestParam("companyId") int companyId) {
+        List<Account> accountResponse = accountService.getAccountWithAssetAndLiabilities(companyId).getBody();
         Map<String, Object> response = new HashMap<>();
         response.put("account", accountResponse);
         response.put("status", true);
