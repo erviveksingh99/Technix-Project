@@ -6,6 +6,8 @@ import com.technix.service.TransactionDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,17 +20,25 @@ public class TransactionDetailsController {
     private TransactionDetailsService detailsService;
 
     @PostMapping("/create")
-    public ResponseEntity<List<TransactionDetails>> createTransactionDetails(@RequestBody TransactionMain transactionMain,  @RequestParam("details") String  details) {
-       /* TransactionDetails transactionResponse = (TransactionDetails) detailsService.createTransactionDetails(transactionMain, details).getBody();
+    public ResponseEntity<Map<String, Object>> createTransactionDetails(@RequestBody TransactionMain transactionMain,
+                                                                        @RequestParam("details") String details,
+                                                                        @RequestParam("ledgerId") Integer ledgerId,
+                                                                        @RequestParam("totalAmount") Double totalAmount,
+                                                                        @RequestParam(value = "chequeNo", required = false) String chequeNo,
+                                                                        @RequestParam(value = "chequeDate", required = false) LocalDate chequeDate,
+                                                                        @RequestParam(value = "referenceNo", required = false) String referenceNo,
+                                                                        @RequestParam("mode") String mode,
+                                                                        @RequestParam("branchId") int branchId) {
+        TransactionMain transactionResponse = detailsService.createTransactionDetails(transactionMain, details, ledgerId, totalAmount, chequeNo, chequeDate, referenceNo, mode,branchId );
         Map<String, Object> response = new HashMap<>();
-        response.put("transactionDetails", transactionResponse);
-        response.put("status", true);*/
-        return  detailsService.createTransactionDetails(transactionMain, details);
+        response.put("details", transactionResponse);
+        response.put("status", true);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/transactionDetailsById/{transactionDetailsId}")
-    public ResponseEntity<Map<String, Object>> getTransactionDetailsById(@RequestParam("transactionDetailsId") int transactionDetailsId) {
-        TransactionDetails transactionResponse = detailsService.getTransactionDetailsById(transactionDetailsId).getBody();
+    @GetMapping("/transactionByTransactionNo/{transactionNo}")
+    public ResponseEntity<Map<String, Object>> getTransactionDetailsByTransactionNo(@RequestParam("transactionNo") int transactionNo) {
+        List<TransactionDetails> transactionResponse = detailsService.getTransactionDetailsByTransactionNo(transactionNo).getBody();
         Map<String, Object> response = new HashMap<>();
         response.put("transactionDetails", transactionResponse);
         response.put("status", true);

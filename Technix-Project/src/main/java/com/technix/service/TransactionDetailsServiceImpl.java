@@ -1,8 +1,9 @@
 package com.technix.service;
 
-import com.technix.custome.IdNotFoundException;
+import com.technix.entity.Ledger;
 import com.technix.entity.TransactionDetails;
 import com.technix.entity.TransactionMain;
+import com.technix.repository.LedgerRepository;
 import com.technix.repository.TransactionDetailsRepository;
 import com.technix.repository.TransactionMainRepository;
 import org.json.JSONArray;
@@ -11,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,151 +30,132 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
     @Autowired
     private TransactionMainRepository transactionMainRepo;
 
-  /*  @Override
-    public ResponseEntity<List<TransactionDetails>> createTransactionDetails(TransactionMain transactionMain, String details) {
-        JSONArray jsonArray;
-        List<TransactionDetails> allDetails = new ArrayList<>(); // List to hold all entries (both debit and credit)
-        try {
-            jsonArray = new JSONArray(details);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid JSON format");
-        }
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-            TransactionDetails detail = new TransactionDetails();
-
-            detail.setCompanyId(jsonObject.optInt("companyId"));
-            detail.setLedgerId(jsonObject.optInt("ledgerId"));
-            detail.setLedgerName(jsonObject.optString("ledgerName"));
-            detail.setNarration(jsonObject.optString("narration"));
-            detail.setDebit(jsonObject.optDouble("debit"));
-            detail.setCredit(jsonObject.optDouble("credit"));
-//            detail.setDBcR(jsonObject.optString("dbCr"));
-            detail.setRefNo(jsonObject.optString("refNo"));
-            detail.setParticularsId(jsonObject.optString("particularsId"));
-            detail.setParticulars(jsonObject.optString("particulars"));
-            detail.setConfirm(jsonObject.optString("confirm"));
-            detail.setConfirmedBy(jsonObject.optString("confirmedBy"));
-            detail.setCreatedBy(jsonObject.optString("createdBy"));
-            detail.setPaymentMode(jsonObject.optString("paymentMode"));
-            detail.setChequeNo(jsonObject.optString("chequeNo"));
-            detail.setBankAccount(jsonObject.optBoolean("isBankAccount"));
-            detail.setBranchId(jsonObject.optInt("branchId"));
-
-            // setting common data
-            detail.setTransactionId(transactionMain.getTransactionId());
-            detail.setTransactionNo(transactionMain.getTransactionNo());
-            detail.setVoucherType(transactionMain.getVoucherType());
-            String typeOfVoucher = transactionMain.getVoucherType();
-            switch (typeOfVoucher) {
-                case "Payment": {
-                    detail.setDBcR("Dr");
-                }
-                case "Contra": {
-                    detail.setDBcR("Cr");
-                }
-                case "Receipt": {
-                    detail.setDBcR("Cr");
-                }
-                case "Journal": {
-                    detail.setDBcR("Cr");
-                }
-            }
-            detail.setVoucherNo(transactionMain.getVoucherNo());
-            detail.setFinancialPeriodId(transactionMain.getFinancialPeriodId());
-            detail.setTransactionDate(LocalDateTime.now());
-            detail.setCreationDate(LocalDateTime.now());
-
-            allDetails.add(detail);
-        }
-        try {
-            transactionDetailsRepo.saveAll(allDetails);
-        } catch (ResponseStatusException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transaction data insertion failed");
-        }
-        return ResponseEntity.ok(allDetails);
-    }*/
+    @Autowired
+    private LedgerRepository ledgerRepo;
 
 
+    @Transactional
     @Override
-    public ResponseEntity<List<TransactionDetails>> createTransactionDetails(TransactionMain transactionMain, String details) {
-        JSONArray jsonArray;
-        List<TransactionDetails> allDetails = new ArrayList<>(); // List to hold all entries (both debit and credit)
-        try {
-            jsonArray = new JSONArray(details);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid JSON format");
+    public TransactionMain createTransactionDetails(TransactionMain transactionMain,
+                                                    String details,
+                                                    Integer ledgerId,
+                                                    Double total,
+                                                    String chequeNo,
+                                                    LocalDate chequeDate,
+                                                    String referenceNo,
+                                                    String mode, int branchId) {
+
+        JSONArray array = new JSONArray(details);
+        JSONObject jsonObject;
+
+        TransactionMain transactionMain1 = new TransactionMain();
+        transactionMain1.setTransactionId(transactionMain.getTransactionId());
+        transactionMain1.setCompanyId(transactionMain.getCompanyId());
+        transactionMain1.setTransactionNo(transactionMainRepo.findMaxTransactionNo(transactionMain.getCompanyId()) + 1);
+        transactionMain1.setVoucherType(transactionMain.getVoucherType());
+        transactionMain1.setVoucherNo(transactionMainRepo.findMaxVoucherNo(transactionMain.getVoucherType(), transactionMain.getCompanyId()) + 1);
+        transactionMain1.setFinancialPeriodId(transactionMain.getFinancialPeriodId());
+        transactionMain1.setTransactionDate(LocalDateTime.now());
+
+        TransactionMain savedTransaction = transactionMainRepo.save(transactionMain1);
+
+        Ledger ledger = ledgerRepo.findById(ledgerId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ledger Id not found"));
+
+        TransactionDetails detail1 = new TransactionDetails();
+        detail1.setTransactionId(savedTransaction.getTransactionId());
+        detail1.setTransactionNo(savedTransaction.getTransactionNo());
+        detail1.setLedgerId(ledger.getLedgerId());
+        detail1.setLedgerName(ledger.getLedgerName());
+        detail1.setTransactionDate(savedTransaction.getTransactionDate());
+        detail1.setVoucherType(savedTransaction.getVoucherType());
+        detail1.setVoucherNo(savedTransaction.getVoucherNo());
+        detail1.setPaymentMode(mode);
+        if (savedTransaction.getVoucherType().equals("Payment")) {
+            detail1.setDebit(0.0);
+            detail1.setCredit(total);
+            detail1.setDBcR("Dr");
         }
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-            TransactionDetails detail = new TransactionDetails();
-
-            detail.setCompanyId(jsonObject.optInt("companyId"));
-            detail.setLedgerId(jsonObject.optInt("ledgerId"));
-            detail.setLedgerName(jsonObject.optString("ledgerName"));
-            detail.setNarration(jsonObject.optString("narration"));
-            detail.setDebit(jsonObject.optDouble("debit"));
-            detail.setCredit(jsonObject.optDouble("credit"));
-//            detail.setDBcR(jsonObject.optString("dbCr"));
-            detail.setRefNo(jsonObject.optString("refNo"));
-            detail.setParticularsId(jsonObject.optString("particularsId"));
-            detail.setParticulars(jsonObject.optString("particulars"));
-            detail.setConfirm(jsonObject.optString("confirm"));
-            detail.setConfirmedBy(jsonObject.optString("confirmedBy"));
-            detail.setCreatedBy(jsonObject.optString("createdBy"));
-            detail.setPaymentMode(jsonObject.optString("paymentMode"));
-            detail.setChequeNo(jsonObject.optString("chequeNo"));
-            detail.setBankAccount(jsonObject.optBoolean("isBankAccount"));
-            detail.setBranchId(jsonObject.optInt("branchId"));
-
-            // setting common data
-            detail.setTransactionId(transactionMain.getTransactionId());
-            detail.setTransactionNo(transactionMain.getTransactionNo());
-            detail.setVoucherType(transactionMain.getVoucherType());
-            String typeOfVoucher = transactionMain.getVoucherType();
-            switch (typeOfVoucher) {
-                case "Payment": {
-                    detail.setDBcR("Dr");
-                }
-                case "Contra": {
-                    detail.setDBcR("Cr");
-                }
-                case "Receipt": {
-                    detail.setDBcR("Cr");
-                }
-                case "Journal": {
-                    detail.setDBcR("Cr");
-                }
-            }
-            detail.setVoucherNo(transactionMain.getVoucherNo());
-            detail.setFinancialPeriodId(transactionMain.getFinancialPeriodId());
-            detail.setTransactionDate(LocalDateTime.now());
-            detail.setCreationDate(LocalDateTime.now());
-
-            allDetails.add(detail);
+        if (savedTransaction.getVoucherType().equals("Receipt") || savedTransaction.getVoucherType().equals("Contra")) {
+            detail1.setDebit(total);
+            detail1.setCredit(0.0);
+            detail1.setDBcR("Cr");
         }
+
+        if (array.length() > 0) {
+            jsonObject = array.getJSONObject(0);
+            String narration = jsonObject.optString("narration", "");
+            detail1.setNarration(narration.isBlank() ? null : narration);
+            detail1.setConfirm(jsonObject.optString("confirm", null));
+            detail1.setConfirmedBy(jsonObject.optString("confirmedBy", null));
+            detail1.setConfirmationDate(jsonObject.optString("confirmationDate", null) != null
+                    ? LocalDate.parse(jsonObject.getString("confirmationDate")) : null);
+            detail1.setCreatedBy(jsonObject.optInt("createdBy", 0));
+        }
+
+        detail1.setChequeNo(chequeNo != null && !chequeNo.trim().isEmpty() ? chequeNo : "");
+        detail1.setChequeDate(chequeDate);
+        detail1.setRefNo(referenceNo != null ? referenceNo : "");
+        detail1.setIsBankAccount(1);
+        detail1.setFinancialPeriodId(1);
+        detail1.setBranchId(branchId);
+        detail1.setCreationDate(LocalDateTime.now());
+        detail1.setCompanyId(savedTransaction.getCompanyId());
+
+        transactionDetailsRepo.save(detail1);
+
+        List<TransactionDetails> transactionDetailsList = new ArrayList<>(); // List to hold all entries (both debit and credit)
+
+        for (int i = 0; i < array.length(); i++) {
+            jsonObject = array.getJSONObject(i);
+
+            TransactionDetails transactionDetailsItem = new TransactionDetails();
+            transactionDetailsItem.setTransactionId(savedTransaction.getTransactionId());
+            transactionDetailsItem.setTransactionNo(savedTransaction.getTransactionNo());
+            transactionDetailsItem.setLedgerId(jsonObject.getInt("ledgerId"));
+            transactionDetailsItem.setLedgerName(jsonObject.getString("ledgerName"));
+            transactionDetailsItem.setTransactionDate(transactionMain.getTransactionDate());
+            transactionDetailsItem.setVoucherType(jsonObject.getString("voucherType"));
+            transactionDetailsItem.setVoucherNo(savedTransaction.getVoucherNo());
+            transactionDetailsItem.setNarration(jsonObject.getString("narration"));
+            transactionDetailsItem.setDebit(jsonObject.optDouble("debit", 0.0));
+            transactionDetailsItem.setCredit(jsonObject.optDouble("credit", 0.0));
+            transactionDetailsItem.setDBcR(jsonObject.optString("dBcR", jsonObject.getString("dBcR")));
+            transactionDetailsItem.setFinancialPeriodId(jsonObject.getInt("financialPeriodID"));
+            transactionDetailsItem.setRefNo(referenceNo);
+            transactionDetailsItem.setParticularsId(jsonObject.optInt("particularsId", 0));
+            transactionDetailsItem.setParticulars(jsonObject.optString("particulars", null));
+            transactionDetailsItem.setConfirm(jsonObject.optString("confirm", null));
+            transactionDetailsItem.setConfirmedBy(jsonObject.optString("confirmedBy", null));
+            transactionDetailsItem.setConfirmationDate(jsonObject.optString("confirmationDate", null) != null
+                    ? LocalDate.parse(jsonObject.getString("confirmationDate")) : null);
+            transactionDetailsItem.setCreatedBy(jsonObject.optInt("createdBy", 0));
+            transactionDetailsItem.setPaymentMode(mode);
+            transactionDetailsItem.setChequeNo(chequeNo != null && !chequeNo.trim().isEmpty() ? chequeNo : "");
+            transactionDetailsItem.setChequeDate(chequeDate);
+            transactionDetailsItem.setIsBankAccount(1);
+            transactionDetailsItem.setRefNo(referenceNo != null ? referenceNo : "");
+          //  transactionDetailsItem.setBranchId(jsonObject.optInt("branchId", 0));
+            transactionDetailsItem.setBranchId(branchId);
+            transactionDetailsItem.setCompanyId(jsonObject.optInt("companyId", 0));
+            transactionDetailsItem.setTransactionDate(LocalDateTime.now());
+            transactionDetailsItem.setCreationDate(LocalDateTime.now());
+
+            transactionDetailsList.add(transactionDetailsItem);
+        }
+
         try {
-            transactionDetailsRepo.saveAll(allDetails);
+            transactionDetailsRepo.saveAll(transactionDetailsList);
         } catch (ResponseStatusException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transaction data insertion failed");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transaction details saving failed");
         }
-        return ResponseEntity.ok(allDetails);
+        return savedTransaction;
     }
 
 
-
-
-
-
-
-
-
     @Override
-    public ResponseEntity<TransactionDetails> getTransactionDetailsById(int transactionDetailsId) {
-        return ResponseEntity.ok(transactionDetailsRepo.findById(transactionDetailsId)
-                .orElseThrow(() -> new IdNotFoundException("TransactionId not found")));
+    public ResponseEntity<List<TransactionDetails>> getTransactionDetailsByTransactionNo(int transactionNo) {
+        return ResponseEntity.ok(transactionDetailsRepo.findByTransactionNo(transactionNo));
     }
 
     @Override

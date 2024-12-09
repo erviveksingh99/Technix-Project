@@ -36,16 +36,16 @@ public class TransactionDetails {
     private String dBcR;
     private int financialPeriodId;
     private String refNo;
-    private String particularsId;
+    private int particularsId;
     private String particulars;
     private String confirm;
     private String confirmedBy;
-    private LocalDateTime confirmationDate;
-    private String createdBy;
+    private LocalDate confirmationDate;
+    private int createdBy;
     private LocalDateTime creationDate;
     private String paymentMode;
     private String chequeNo;
     private LocalDate chequeDate;
-    private boolean isBankAccount;
+    private int isBankAccount;
     private int branchId;
 }
