@@ -59,6 +59,7 @@ public class Contacts {
     private String GSTINType;
     private String stateCode;
     private boolean TdsApplicable;
+    private int pricingId;
     private int ledgerId;
     private int accountId;
     private String useAs;
@@ -73,6 +74,14 @@ public class Contacts {
     private double partyDiscPer;
     private String customerType;
     private String remarks;
+    private boolean portalAccess;
     private  int createdBy;
-    private LocalDateTime createdAt;
+    private String loginEmail;
+    private String loginPassword;
+    private String profilePicture;
+
+    @Transient
+    private String imageUrl;
+
+    private LocalDateTime creationDate;
 }
