@@ -14,57 +14,67 @@ import org.springframework.web.server.ResponseStatusException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IdNotFoundException.class)
-    public ResponseEntity<ErrorDetails> handleIdNotFoundException(WebRequest req) {
+    public ResponseEntity<ErrorDetails> handleIdNotFoundException(IdNotFoundException ex ,WebRequest req) {
         ErrorDetails details = new ErrorDetails();
-        details.setMessage("Id not found");
+        details.setMessage(ex.getMessage());
         details.setStatus(false);
         return new ResponseEntity<>(details, HttpStatus.OK);
     }
 
     @ExceptionHandler(EmailNotFoundException.class)
-    public ResponseEntity<ErrorDetails> handleEmailNotFoundException(WebRequest req) {
+    public ResponseEntity<ErrorDetails> handleEmailNotFoundException(EmailNotFoundException ex ,WebRequest req) {
         ErrorDetails details = new ErrorDetails();
-        details.setMessage("Email and password doesn't matched");
+        details.setMessage(ex.getMessage());
+        details.setStatusCode(HttpStatus.OK.value());
+        details.setError(HttpStatus.OK.toString());
+        details.setException(ex.getClass().getName());
+        details.setPath(req.getDescription(false).replace("uri=", ""));
         details.setStatus(false);
         return new ResponseEntity<>(details, HttpStatus.OK);
     }
 
     @ExceptionHandler(PasswordInvalidException.class)
-    public ResponseEntity<ErrorDetails> handlePasswordInvalidException(WebRequest req) {
+    public ResponseEntity<ErrorDetails> handlePasswordInvalidException(PasswordInvalidException ex ,WebRequest req) {
         ErrorDetails details = new ErrorDetails();
-        details.setMessage("Email and password doesn't matched");
+        details.setTimestamp(System.currentTimeMillis() / 1000L);
+        details.setMessage(ex.getMessage());
         details.setStatus(false);
         return new ResponseEntity<>(details, HttpStatus.OK);
     }
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<ErrorDetails> handleResponseStatusException(WebRequest req) {
+    public ResponseEntity<ErrorDetails> handleResponseStatusException(ResponseStatusException ex, WebRequest request) {
         ErrorDetails details = new ErrorDetails();
-        details.setMessage("Data base communication failed ");
-        details.setStatus(false);
-        return new ResponseEntity<>(details, HttpStatus.BAD_REQUEST);
+        details.setTimestamp(System.currentTimeMillis() / 1000L);  // Set timestamp in seconds
+        details.setStatusCode(ex.getStatusCode().value());  // Set HTTP status code
+        details.setError(ex.getStatusCode().toString());  // Set error string (e.g., BAD_REQUEST)
+        details.setException(ex.getClass().getName());  // Set the exception class name
+        details.setMessage(ex.getReason());  // Set the exception message (reason)
+        details.setPath(request.getDescription(false).replace("uri=", ""));  // Extract URI path
+        return new ResponseEntity<>(details, ex.getStatusCode());
     }
+
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ErrorDetails> handleMaxSizeException(MaxUploadSizeExceededException exc) {
         ErrorDetails details = new ErrorDetails();
-        details.setMessage("File size is too large!");
+        details.setMessage(exc.getMessage());
         details.setStatus(false);
         return new ResponseEntity<>(details, HttpStatus.EXPECTATION_FAILED);
     }
 
     @ExceptionHandler(TokenNotFoundException.class)
-    public ResponseEntity<ErrorDetails> handleTokenNotFoundException(WebRequest req) {
+    public ResponseEntity<ErrorDetails> handleTokenNotFoundException(TokenNotFoundException ex ,WebRequest req) {
         ErrorDetails details = new ErrorDetails();
-        details.setMessage("Valid token is required");
+        details.setMessage(ex.getMessage());
         details.setStatus(false);
         return new ResponseEntity<>(details, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(PictureNotFoundException.class)
-    public ResponseEntity<ErrorDetails> handlePictureNotFoundException(WebRequest req) {
+    public ResponseEntity<ErrorDetails> handlePictureNotFoundException(PictureNotFoundException ex, WebRequest req) {
         ErrorDetails details = new ErrorDetails();
-        details.setMessage("Image not found");
+        details.setMessage(ex.getMessage());
         details.setStatus(false);
         return new ResponseEntity<>(details, HttpStatus.OK);
     }

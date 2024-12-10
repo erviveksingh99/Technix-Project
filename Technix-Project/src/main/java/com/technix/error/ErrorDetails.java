@@ -10,4 +10,9 @@ import lombok.NoArgsConstructor;
 public class ErrorDetails {
     private String message;
     private  Boolean status;
+    private  int statusCode;
+    private long timestamp;
+    private String error;
+    private String exception;
+    private String path;
 }
