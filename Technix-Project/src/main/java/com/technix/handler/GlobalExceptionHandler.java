@@ -14,15 +14,20 @@ import org.springframework.web.server.ResponseStatusException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IdNotFoundException.class)
-    public ResponseEntity<ErrorDetails> handleIdNotFoundException(IdNotFoundException ex ,WebRequest req) {
+    public ResponseEntity<ErrorDetails> handleIdNotFoundException(IdNotFoundException ex, WebRequest req) {
         ErrorDetails details = new ErrorDetails();
-        details.setMessage(ex.getMessage());
+        details.setTimestamp(System.currentTimeMillis() / 1000L);  // Set timestamp in seconds
+        details.setStatusCode(HttpStatus.OK.value());  // Set HTTP status code
+        details.setError(HttpStatus.OK.toString());  // Set error string (e.g., BAD_REQUEST)
+        details.setException(ex.getClass().getName());  // Set the exception class name
+        details.setMessage(ex.getMessage());  // Set the exception message (reason)
         details.setStatus(false);
+        details.setPath(req.getDescription(false).replace("uri=", ""));  // Extract URI path
         return new ResponseEntity<>(details, HttpStatus.OK);
     }
 
     @ExceptionHandler(EmailNotFoundException.class)
-    public ResponseEntity<ErrorDetails> handleEmailNotFoundException(EmailNotFoundException ex ,WebRequest req) {
+    public ResponseEntity<ErrorDetails> handleEmailNotFoundException(EmailNotFoundException ex, WebRequest req) {
         ErrorDetails details = new ErrorDetails();
         details.setMessage(ex.getMessage());
         details.setStatusCode(HttpStatus.OK.value());
@@ -34,11 +39,15 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(PasswordInvalidException.class)
-    public ResponseEntity<ErrorDetails> handlePasswordInvalidException(PasswordInvalidException ex ,WebRequest req) {
+    public ResponseEntity<ErrorDetails> handlePasswordInvalidException(PasswordInvalidException ex, WebRequest req) {
         ErrorDetails details = new ErrorDetails();
-        details.setTimestamp(System.currentTimeMillis() / 1000L);
-        details.setMessage(ex.getMessage());
+        details.setTimestamp(System.currentTimeMillis() / 1000L);  // Set timestamp in seconds
+        details.setStatusCode(HttpStatus.OK.value());  // Set HTTP status code
+        details.setError(HttpStatus.OK.toString());  // Set error string (e.g., BAD_REQUEST)
+        details.setException(ex.getClass().getName());  // Set the exception class name
+        details.setMessage(ex.getMessage());  // Set the exception message (reason)
         details.setStatus(false);
+        details.setPath(req.getDescription(false).replace("uri=", ""));  // Extract URI path
         return new ResponseEntity<>(details, HttpStatus.OK);
     }
 
@@ -54,36 +63,55 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(details, ex.getStatusCode());
     }
 
-
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<ErrorDetails> handleMaxSizeException(MaxUploadSizeExceededException exc) {
+    public ResponseEntity<ErrorDetails> handleMaxSizeException(MaxUploadSizeExceededException ex, WebRequest request) {
         ErrorDetails details = new ErrorDetails();
-        details.setMessage(exc.getMessage());
+        details.setTimestamp(System.currentTimeMillis() / 1000L);  // Set timestamp in seconds
+        details.setStatusCode(HttpStatus.EXPECTATION_FAILED.value());  // Set HTTP status code
+        details.setError(HttpStatus.EXPECTATION_FAILED.toString());  // Set error string (e.g., BAD_REQUEST)
+        details.setException(ex.getClass().getName());  // Set the exception class name
+        details.setMessage(ex.getMessage());  // Set the exception message (reason)
         details.setStatus(false);
+        details.setPath(request.getDescription(false).replace("uri=", ""));  // Extract URI path
         return new ResponseEntity<>(details, HttpStatus.EXPECTATION_FAILED);
     }
 
     @ExceptionHandler(TokenNotFoundException.class)
-    public ResponseEntity<ErrorDetails> handleTokenNotFoundException(TokenNotFoundException ex ,WebRequest req) {
+    public ResponseEntity<ErrorDetails> handleTokenNotFoundException(TokenNotFoundException ex, WebRequest req) {
         ErrorDetails details = new ErrorDetails();
-        details.setMessage(ex.getMessage());
+        details.setTimestamp(System.currentTimeMillis() / 1000L);  // Set timestamp in seconds
+        details.setStatusCode(HttpStatus.BAD_REQUEST.value());  // Set HTTP status code
+        details.setError(HttpStatus.BAD_REQUEST.toString());  // Set error string (e.g., BAD_REQUEST)
+        details.setException(ex.getClass().getName());  // Set the exception class name
+        details.setMessage(ex.getMessage());  // Set the exception message (reason)
         details.setStatus(false);
+        details.setPath(req.getDescription(false).replace("uri=", ""));  // Extract URI path
         return new ResponseEntity<>(details, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(PictureNotFoundException.class)
     public ResponseEntity<ErrorDetails> handlePictureNotFoundException(PictureNotFoundException ex, WebRequest req) {
         ErrorDetails details = new ErrorDetails();
-        details.setMessage(ex.getMessage());
+        details.setTimestamp(System.currentTimeMillis() / 1000L);  // Set timestamp in seconds
+        details.setStatusCode(HttpStatus.OK.value());  // Set HTTP status code
+        details.setError(HttpStatus.OK.toString());  // Set error string (e.g., BAD_REQUEST)
+        details.setException(ex.getClass().getName());  // Set the exception class name
+        details.setMessage(ex.getMessage());  // Set the exception message (reason)
         details.setStatus(false);
+        details.setPath(req.getDescription(false).replace("uri=", ""));  // Extract URI path
         return new ResponseEntity<>(details, HttpStatus.OK);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorDetails> handleException(Exception ex) {
+    public ResponseEntity<ErrorDetails> handleException(Exception ex, WebRequest request) {
         ErrorDetails details = new ErrorDetails();
-        details.setMessage(ex.getMessage());
+        details.setTimestamp(System.currentTimeMillis() / 1000L);  // Set timestamp in seconds
+        details.setStatusCode(HttpStatus.BAD_REQUEST.value());  // Set HTTP status code
+        details.setError(HttpStatus.BAD_REQUEST.toString());  // Set error string (e.g., BAD_REQUEST)
+        details.setException(ex.getClass().getName());  // Set the exception class name
+        details.setMessage(ex.getMessage());  // Set the exception message (reason)
         details.setStatus(false);
+        details.setPath(request.getDescription(false).replace("uri=", ""));  // Extract URI path
         return new ResponseEntity<>(details, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
