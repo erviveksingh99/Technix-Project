@@ -1,8 +1,10 @@
 package com.technix.service;
 
+import com.technix.custome.IdNotFoundException;
 import com.technix.entity.Ledger;
 import com.technix.entity.TransactionDetails;
 import com.technix.entity.TransactionMain;
+import com.technix.entity.Unit;
 import com.technix.repository.LedgerRepository;
 import com.technix.repository.TransactionDetailsRepository;
 import com.technix.repository.TransactionMainRepository;
@@ -17,9 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class TransactionDetailsServiceImpl implements TransactionDetailsService {
@@ -73,13 +73,13 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
         if (savedTransaction.getVoucherType().equals("Payment")) {
             detail1.setDebit(0.0);
             detail1.setCredit(total);
-            detail1.setDBcR("Dr");
+            detail1.setDBcR("Cr");
         }
 
         if (savedTransaction.getVoucherType().equals("Receipt") || savedTransaction.getVoucherType().equals("Contra")) {
             detail1.setDebit(total);
             detail1.setCredit(0.0);
-            detail1.setDBcR("Cr");
+            detail1.setDBcR("Dr");
         }
 
         if (array.length() > 0) {
@@ -87,7 +87,7 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
             String narration = jsonObject.optString("narration", "");
             detail1.setNarration(narration.isBlank() ? null : narration);
             detail1.setConfirm(jsonObject.optString("confirm", null));
-            detail1.setConfirmedBy(jsonObject.optString("confirmedBy", null));
+            detail1.setConfirmedBy(jsonObject.optInt("confirmedBy", 0));
             detail1.setConfirmationDate(jsonObject.optString("confirmationDate", null) != null
                     ? LocalDate.parse(jsonObject.getString("confirmationDate")) : null);
             detail1.setCreatedBy(jsonObject.optInt("createdBy", 0));
@@ -126,7 +126,7 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
             transactionDetailsItem.setParticularsId(jsonObject.optInt("particularsId", 0));
             transactionDetailsItem.setParticulars(jsonObject.optString("particulars", null));
             transactionDetailsItem.setConfirm(jsonObject.optString("confirm", null));
-            transactionDetailsItem.setConfirmedBy(jsonObject.optString("confirmedBy", null));
+            transactionDetailsItem.setConfirmedBy(jsonObject.optInt("confirmedBy", 0));
             transactionDetailsItem.setConfirmationDate(jsonObject.optString("confirmationDate", null) != null
                     ? LocalDate.parse(jsonObject.getString("confirmationDate")) : null);
             transactionDetailsItem.setCreatedBy(jsonObject.optInt("createdBy", 0));
@@ -135,7 +135,7 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
             transactionDetailsItem.setChequeDate(chequeDate);
             transactionDetailsItem.setIsBankAccount(1);
             transactionDetailsItem.setRefNo(referenceNo != null ? referenceNo : "");
-          //  transactionDetailsItem.setBranchId(jsonObject.optInt("branchId", 0));
+            //  transactionDetailsItem.setBranchId(jsonObject.optInt("branchId", 0));
             transactionDetailsItem.setBranchId(branchId);
             transactionDetailsItem.setCompanyId(jsonObject.optInt("companyId", 0));
             transactionDetailsItem.setTransactionDate(LocalDateTime.now());
@@ -160,6 +160,15 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
 
     @Override
     public ResponseEntity<Map<String, Object>> deleteTransactionDetailsById(int transactionDetailsId) {
-        return null;
+        Optional<TransactionDetails> transactionDetails = transactionDetailsRepo.findById(transactionDetailsId);
+        if (transactionDetails.isPresent()) {
+            transactionDetailsRepo.deleteById(transactionDetailsId);
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", true);
+            response.put("message", "Transaction details data is deleted");
+            return ResponseEntity.ok(response);
+        } else {
+            throw new IdNotFoundException("Id not found");
+        }
     }
 }

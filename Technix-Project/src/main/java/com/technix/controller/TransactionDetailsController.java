@@ -29,7 +29,7 @@ public class TransactionDetailsController {
                                                                         @RequestParam(value = "referenceNo", required = false) String referenceNo,
                                                                         @RequestParam("mode") String mode,
                                                                         @RequestParam("branchId") int branchId) {
-        TransactionMain transactionResponse = detailsService.createTransactionDetails(transactionMain, details, ledgerId, totalAmount, chequeNo, chequeDate, referenceNo, mode,branchId );
+        TransactionMain transactionResponse = detailsService.createTransactionDetails(transactionMain, details, ledgerId, totalAmount, chequeNo, chequeDate, referenceNo, mode, branchId);
         Map<String, Object> response = new HashMap<>();
         response.put("details", transactionResponse);
         response.put("status", true);
@@ -43,5 +43,11 @@ public class TransactionDetailsController {
         response.put("transactionDetails", transactionResponse);
         response.put("status", true);
         return ResponseEntity.ok(response);
+    }
+
+
+    @DeleteMapping("/delete/{transactionDetailsId}")
+    public ResponseEntity<Map<String, Object>> deleteTransactionDetailsById(@RequestParam("transactionDetailsId") int transactionDetailsId) {
+        return detailsService.deleteTransactionDetailsById(transactionDetailsId);
     }
 }

@@ -39,7 +39,7 @@ public class TransactionDetails {
     private int particularsId;
     private String particulars;
     private String confirm;
-    private String confirmedBy;
+    private int confirmedBy;
     private LocalDate confirmationDate;
     private int createdBy;
     private LocalDateTime creationDate;
