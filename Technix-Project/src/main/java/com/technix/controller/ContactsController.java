@@ -8,9 +8,9 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,23 +22,42 @@ public class ContactsController {
     private ContactsService contactsService;
 
     @PostMapping(value = "/create", consumes = "multipart/form-data")
-    public ResponseEntity<Contacts> createContacts(@Parameter @ModelAttribute Contacts contacts, @RequestParam("file") MultipartFile profilePicture) throws Exception {
-        return contactsService.createContacts(contacts, profilePicture);
+    public ResponseEntity<Map<String, Object>> createContacts(@Parameter @ModelAttribute Contacts contacts,
+                                                              @RequestParam("file") MultipartFile profilePicture) throws Exception {
+        Contacts contactsResponse = contactsService.createContacts(contacts, profilePicture).getBody();
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", contactsResponse);
+        response.put("status", true);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping(value = "/update", consumes = "multipart/form-data")
-    public ResponseEntity<Contacts> updateContacts(@RequestParam("contactId") int contactId, @Parameter @ModelAttribute Contacts contacts, @RequestParam("file") MultipartFile profilePicture) {
-        return contactsService.updateContacts(contactId, contacts, profilePicture);
+    public ResponseEntity<Map<String, Object>> updateContacts(@RequestParam("contactId") int contactId,
+                                                              @Parameter @ModelAttribute Contacts contacts,
+                                                              @RequestParam("file") MultipartFile profilePicture) throws Exception {
+        Contacts updatedContact = contactsService.updateContacts(contactId, contacts, profilePicture).getBody();
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", updatedContact);
+        response.put("status", true);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/getContact/{contactId}")
-    public ResponseEntity<Contacts> getContactsById(@RequestParam("contactId") int contactId) {
-        return contactsService.getContactsById(contactId);
+    public ResponseEntity<Map<String, Object>> getContactsById(@RequestParam("contactId") int contactId) {
+        Contacts contacts = contactsService.getContactsById(contactId).getBody();
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", contacts);
+        response.put("status", true);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/getContactByCompany/{companyId}")
-    public ResponseEntity<List<Contacts>> getContactsByCompanyId(@RequestParam("companyId") int companyId) {
-        return contactsService.getContactsByCompanyId(companyId);
+    public ResponseEntity<Map<String, Object>> getContactsByCompanyId(@RequestParam("companyId") int companyId) {
+        List<Contacts> contactsList = contactsService.getContactsByCompanyId(companyId).getBody();
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", contactsList);
+        response.put("status", true);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/profilePic/{contactId}")

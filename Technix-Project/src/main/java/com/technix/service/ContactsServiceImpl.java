@@ -8,13 +8,16 @@ import com.technix.entity.Ledger;
 import com.technix.repository.AccountRepository;
 import com.technix.repository.ContactsRepository;
 import com.technix.repository.LedgerRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,19 +29,24 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class ContactsServiceImpl implements ContactsService {
 
-    @Autowired
-    private ContactsRepository contactsRepo;
+    private final ContactsRepository contactsRepo;
+    private final AccountRepository accountRepo;
+    private final LedgerRepository ledgerRepo;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private AccountRepository accountRepo;
-
-    @Autowired
-    private LedgerRepository ledgerRepo;
-
-    @Autowired
-    private AccountService accountService;
+    public ContactsServiceImpl(AccountRepository accountRepo,
+                               ContactsRepository contactsRepo,
+                               LedgerRepository ledgerRepo,
+                               PasswordEncoder passwordEncoder) {
+        this.accountRepo = accountRepo;
+        this.contactsRepo = contactsRepo;
+        this.ledgerRepo = ledgerRepo;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Value("${upload.dir}")
     private String uploadDir;
@@ -73,9 +81,9 @@ public class ContactsServiceImpl implements ContactsService {
         }
         int contactId = 0;
         try {
+            contacts.setLoginPassword(passwordEncoder.encode(contacts.getLoginPassword()));
             contacts.setCreationDate(LocalDateTime.now());
             contacts.setLedgerId(l1.getLedgerId());
-
             Contacts savedContact = contactsRepo.save(contacts);
             contactId = savedContact.getContactId();
         } catch (ResponseStatusException e) {
@@ -115,7 +123,7 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     @Override
-    public ResponseEntity<Contacts> updateContacts(int contactId, Contacts contacts, MultipartFile profilePic) {
+    public ResponseEntity<Contacts> updateContacts(int contactId, Contacts contacts, MultipartFile profilePic) throws Exception {
         Optional<Contacts> contactsOptional = contactsRepo.findById(contactId);
         if (contactsOptional.isPresent()) {
             try {
@@ -147,12 +155,12 @@ public class ContactsServiceImpl implements ContactsService {
                 contacts1.setShippingPinCode(contacts.getShippingPinCode());
                 contacts1.setShippingState(contacts.getShippingState());
                 contacts1.setShippingCountry(contacts.getShippingCountry());
-                contacts1.setPANNo(contacts.getPANNo());
-                contacts1.setTexRegNo(contacts.getTexRegNo());
+                contacts1.setPanNo(contacts.getPanNo());
+                contacts1.setTaxRegNo(contacts.getTaxRegNo());
                 contacts1.setAdhaarNo(contacts.getAdhaarNo());
                 contacts1.setTaxationType(contacts.getTaxationType());
-                contacts1.setGSTIN(contacts.getGSTIN());
-                contacts1.setGSTINType(contacts.getGSTINType());
+                contacts1.setGstIN(contacts.getGstIN());
+                contacts1.setGstInType(contacts.getGstInType());
                 contacts1.setStateCode(contacts.getStateCode());
                 contacts1.setTdsApplicable(contacts.isTdsApplicable() ? true : false);
                 contacts1.setPricingId(contacts.getPricingId());
@@ -170,7 +178,7 @@ public class ContactsServiceImpl implements ContactsService {
                 contacts1.setRemarks(contacts.getRemarks());
                 contacts1.setPortalAccess(contacts.isPortalAccess());
                 contacts1.setLoginEmail(contacts.getLoginEmail());
-                contacts1.setLoginPassword(contacts.getLoginPassword());
+                contacts1.setLoginPassword(passwordEncoder.encode(contacts.getLoginPassword()));
 
                 //****************************************************
                 // Handle profile picture upload
@@ -199,35 +207,50 @@ public class ContactsServiceImpl implements ContactsService {
                 contacts1.setCreatedBy(contacts.getCreatedBy());
                 contacts1.setCreationDate(LocalDateTime.now());
 
-                Optional<Account> optionalAccount = accountRepo.findById(contacts.getAccountId());
-                Account account = null;
-                if (optionalAccount.isPresent()) {
-                    account = optionalAccount.get();
-                }
-                Ledger newLedger = new Ledger();
-                newLedger.setCompanyId(contacts.getCompanyId());
-                newLedger.setLedgerName(contacts.getContactName());
-                newLedger.setAccount(account.getAccounts());
-                newLedger.setAccountNature(account.getAccountNature());
-                newLedger.setAccount_id(contacts.getAccountId());
-                newLedger.setOrderByNumber(0);
-                newLedger.setTdsApplicable(contacts.isTdsApplicable() ? 1 : 0);
-                newLedger.setActive(true);
-                newLedger.setSystemDefault(false);
-                newLedger.setCreatedBy(contacts.getCreatedBy());
-                newLedger.setCreatedAt(LocalDateTime.now());
-                Ledger l1 = null;
-                try {
-                    l1 = ledgerRepo.save(newLedger);
-                } catch (ResponseStatusException e) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ledger data is not saved from the contacts entity");
-                }
-                contacts1.setLedgerId(l1.getLedgerId());
+                Ledger newLedger = null;
+                Optional<Ledger> ledgerOptional = ledgerRepo.findById(contacts.getLedgerId());
 
+                if (ledgerOptional.isPresent()) {
+                    newLedger = ledgerOptional.get();
+
+                 //   log.info("Ledger: {}", newLedger.getLedgerId());
+                    System.out.println("Ledger id is : "+newLedger.getLedgerId());
+
+                    Optional<Account> optionalAccount = accountRepo.findById(contacts.getAccountId());
+                    Account account = null;
+                    if (optionalAccount.isPresent()) {
+                        account = optionalAccount.get();
+                    } else {
+                        throw new IdNotFoundException("Account id not found");
+                    }
+                    newLedger.setLedgerId(contacts.getLedgerId());
+                    newLedger.setCompanyId(contacts.getCompanyId());
+                    newLedger.setLedgerName(contacts.getContactName());
+                    newLedger.setAccount(account.getAccounts());
+                    newLedger.setAccountNature(account.getAccountNature());
+                    newLedger.setAccount_id(contacts.getAccountId());
+                    newLedger.setOrderByNumber(0);
+                    newLedger.setTdsApplicable(contacts.isTdsApplicable() ? 1 : 0);
+                    newLedger.setActive(true);
+                    newLedger.setSystemDefault(false);
+                    newLedger.setCreatedBy(contacts.getCreatedBy());
+                    newLedger.setCreatedAt(LocalDateTime.now());
+                    Ledger l1 = null;
+                    try {
+                        l1 = ledgerRepo.save(newLedger);
+                    } catch (ResponseStatusException e) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ledger data is not updated");
+                    }
+                    contacts1.setLedgerId(l1.getLedgerId());
+                } else {
+                    throw new IdNotFoundException("Ledger id not found");
+                }
                 return ResponseEntity.ok(contactsRepo.save(contacts1));
             } catch (Exception e) {
+                log.error("Failed to update contact: {}" + e.getMessage(), e); // Use a logger here
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Database communication failed in contacts");
             }
+
         } else {
             throw new IdNotFoundException("Contact Id not found");
         }
@@ -235,13 +258,24 @@ public class ContactsServiceImpl implements ContactsService {
 
     @Override
     public ResponseEntity<Contacts> getContactsById(int contactId) {
-        return ResponseEntity.ok(contactsRepo.findById(contactId).orElseThrow(() -> new IdNotFoundException("Id not found")));
+
+        Optional<Contacts> optionalContacts = contactsRepo.findById(contactId);
+        if (optionalContacts.isPresent()) {
+            Contacts contacts = optionalContacts.get();
+            contacts.setImageUrl(imageUrl + contactId);
+            return ResponseEntity.ok(contacts);
+        } else {
+            throw new IdNotFoundException("Contact id not found");
+        }
     }
 
     @Override
     public ResponseEntity<List<Contacts>> getContactsByCompanyId(int companyId) {
         List<Contacts> contactLists = contactsRepo.findByCompanyId(companyId);
         if (!contactLists.isEmpty()) {
+            for (int i = 0; i < contactLists.size(); i++) {
+                contactLists.get(i).setImageUrl(imageUrl + contactLists.get(i).getContactId());
+            }
             return ResponseEntity.ok(contactLists);
         } else {
             throw new IdNotFoundException("Company id not found");
@@ -268,7 +302,7 @@ public class ContactsServiceImpl implements ContactsService {
                 // Return the file as a resource
                 return new ResponseEntity<>(resource, headers, HttpStatus.OK);
             } else {
-                throw new FileNotFoundException("File not found in contacts implementation class " + filePath);
+                throw new FileNotFoundException("File not found in contacts" + filePath);
             }
         } else {
             throw new PictureNotFoundException("Image not found in contacts");

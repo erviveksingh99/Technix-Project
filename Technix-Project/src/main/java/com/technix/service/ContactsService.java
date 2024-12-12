@@ -14,7 +14,7 @@ public interface ContactsService {
 
     public ResponseEntity<Contacts> createContacts(Contacts contacts, MultipartFile profilePicture) throws Exception;
 
-    public ResponseEntity<Contacts> updateContacts(int contactId, Contacts contacts, MultipartFile profilePic);
+    public ResponseEntity<Contacts> updateContacts(int contactId, Contacts contacts, MultipartFile profilePic) throws Exception;
 
     public ResponseEntity<Contacts> getContactsById(int contactId);
 

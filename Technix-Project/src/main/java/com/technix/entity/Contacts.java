@@ -13,12 +13,12 @@ public class Contacts {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "contact_id")
     private int contactId;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", referencedColumnName = "company_id", insertable = false, updatable = false)
-
     private Company company;
 
     @Column(name = "company_id", insertable = true, updatable = true)
@@ -51,12 +51,12 @@ public class Contacts {
     private String shippingPinCode;
     private String shippingState;
     private String shippingCountry;
-    private String PANNo;
-    private String TexRegNo;
+    private String panNo;
+    private String TaxRegNo;
     private String AdhaarNo;
     private String taxationType;
-    private String GSTIN;
-    private String GSTINType;
+    private String gstIN;
+    private String gstInType;
     private String stateCode;
     private boolean TdsApplicable;
     private int pricingId;
