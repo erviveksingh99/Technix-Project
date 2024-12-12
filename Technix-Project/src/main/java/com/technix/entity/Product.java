@@ -6,7 +6,6 @@ import com.technix.dto.Views;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 
 @Data
@@ -17,6 +16,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(Views.ParentView.class)
+    @Column(name = "product_id")
     private int productId;
 
     @JsonIgnore
@@ -103,7 +103,7 @@ public class Product {
     private String unit;
 
     @JsonView(Views.ParentView.class)
-    private String UQCCode;
+    private String uqcCode;
 
     @JsonView(Views.ParentView.class)
     private boolean altUnitRequired;
