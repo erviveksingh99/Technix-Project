@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface TransactionMainRepository extends JpaRepository<TransactionMain, Integer> {
 
@@ -14,4 +16,6 @@ public interface TransactionMainRepository extends JpaRepository<TransactionMain
 
     @Query(value = "SELECT COALESCE(MAX(voucher_no), 0) FROM tblfinancialperiodtransaction WHERE voucher_type = :voucherType AND company_id = :companyId", nativeQuery = true)
     int findMaxVoucherNo(@Param("voucherType") String voucherType, @Param("companyId") int companyId);
+
+    Optional<TransactionMain> findByTransactionNo(int transactionNo);
 }

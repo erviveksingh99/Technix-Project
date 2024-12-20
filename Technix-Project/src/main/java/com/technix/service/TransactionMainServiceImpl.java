@@ -6,7 +6,7 @@ import com.technix.repository.TransactionMainRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -19,7 +19,7 @@ public class TransactionMainServiceImpl implements TransactionMainService {
 
     @Override
     public ResponseEntity<TransactionMain> createTransactionMain(TransactionMain transactionMain) {
-        transactionMain.setTransactionDate(LocalDateTime.now());
+        transactionMain.setTransactionDate(LocalDate.now());
         return ResponseEntity.ok(transactionMainRepo.save(transactionMain));
     }
 

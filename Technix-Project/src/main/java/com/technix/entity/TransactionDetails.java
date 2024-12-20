@@ -13,6 +13,7 @@ public class TransactionDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "row_id")
     private int rowId;
 
     @JsonIgnore
@@ -27,7 +28,7 @@ public class TransactionDetails {
     private int transactionNo;
     private int ledgerId;
     private String ledgerName;
-    private LocalDateTime transactionDate;
+    private LocalDate transactionDate;
     private String voucherType;
     private int voucherNo;
     private String narration;

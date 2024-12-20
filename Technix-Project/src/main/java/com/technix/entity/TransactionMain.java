@@ -3,6 +3,8 @@ package com.technix.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -12,6 +14,7 @@ public class TransactionMain {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "transaction_id")
     private  int transactionId;
 
     @JsonIgnore
@@ -23,7 +26,7 @@ public class TransactionMain {
     private int companyId;
 
     private int transactionNo;
-    private LocalDateTime transactionDate;
+    private LocalDate transactionDate;
     private int financialPeriodId;
     private String voucherType;
     private int voucherNo;

@@ -33,6 +33,14 @@ public class Bill {
     @Column(name = "contact_id", insertable = true, updatable = true)
     private int contactId;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "transaction_id", referencedColumnName = "transaction_id", insertable = false,updatable = false)
+    private TransactionMain transactionMain;
+
+    @Column(name = "transaction_id", insertable = true, updatable = true)
+    private int transactionId;
+
     private LocalDate billDate;
     private String invoiceNo;
     private String referenceNo;
@@ -41,6 +49,7 @@ public class Bill {
     private String customerAddress;
     private String customerEmail;
     private String customerContactNo;
+
     private String placeOfSupply;
     private double subTotal;
     private double discPer;

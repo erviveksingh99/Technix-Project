@@ -1,14 +1,12 @@
 package com.technix.dto;
 
-import com.technix.entity.Contacts;
 import lombok.Data;
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
 public class BillDTO {
-
-
+    private int companyId;
     private int contactId;
     private LocalDate billDate;
     private String invoiceNo;
@@ -18,6 +16,7 @@ public class BillDTO {
     private String customerAddress;
     private String customerEmail;
     private String customerContactNo;
+    private int transactionId;
     private String placeOfSupply;
     private double subTotal;
     private double discPer;

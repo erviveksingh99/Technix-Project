@@ -4,7 +4,6 @@ import com.technix.custome.IdNotFoundException;
 import com.technix.entity.Ledger;
 import com.technix.entity.TransactionDetails;
 import com.technix.entity.TransactionMain;
-import com.technix.entity.Unit;
 import com.technix.repository.LedgerRepository;
 import com.technix.repository.TransactionDetailsRepository;
 import com.technix.repository.TransactionMainRepository;
@@ -16,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -32,7 +30,6 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
 
     @Autowired
     private LedgerRepository ledgerRepo;
-
 
     @Transactional
     @Override
@@ -55,7 +52,7 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
         transactionMain1.setVoucherType(transactionMain.getVoucherType());
         transactionMain1.setVoucherNo(transactionMainRepo.findMaxVoucherNo(transactionMain.getVoucherType(), transactionMain.getCompanyId()) + 1);
         transactionMain1.setFinancialPeriodId(transactionMain.getFinancialPeriodId());
-        transactionMain1.setTransactionDate(LocalDateTime.now());
+        transactionMain1.setTransactionDate(LocalDate.now());
 
         TransactionMain savedTransaction = transactionMainRepo.save(transactionMain1);
 
@@ -138,7 +135,7 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
             //  transactionDetailsItem.setBranchId(jsonObject.optInt("branchId", 0));
             transactionDetailsItem.setBranchId(branchId);
             transactionDetailsItem.setCompanyId(jsonObject.optInt("companyId", 0));
-            transactionDetailsItem.setTransactionDate(LocalDateTime.now());
+            transactionDetailsItem.setTransactionDate(LocalDate.now());
             transactionDetailsItem.setCreationDate(LocalDateTime.now());
 
             transactionDetailsList.add(transactionDetailsItem);

@@ -26,14 +26,14 @@ public class BillController {
         return ResponseEntity.ok(response);
     }
 
-   /* @PutMapping("/update")
-    public ResponseEntity<Map<String, Object>> updateBill(@RequestBody BillDTO billDTO) {
-        Bill billResponse = billService.updateBill(billDTO).getBody();
+    @PutMapping("/update/{billId}")
+    public ResponseEntity<Map<String, Object>> updateBill(@PathVariable("billId") int billId,@RequestBody BillDTO billDTO) {
+        Bill billResponse = billService.updateBill(billId,billDTO).getBody();
         Map<String, Object> response = new HashMap<>();
         response.put("data", billResponse);
         response.put("status", true);
         return ResponseEntity.ok(response);
-    }*/
+    }
 
     @GetMapping("/getBillById/{billId}")
     public ResponseEntity<Map<String, Object>> getBillById(@PathVariable("billId") int billId) {
