@@ -1,18 +1,21 @@
 package com.technix.service;
 
-import com.technix.entity.PaymentDetails;
+import org.springframework.http.ResponseEntity;
 
-import java.util.List;
+import java.util.Map;
 
 public interface PaymentDetailsService {
 
-    public List<PaymentDetails> createPayment(String paymentDetails,
-                              String voucherType,
-                              int contactId,
-                              int companyId,
-                              int branchId);
+    public ResponseEntity<Map<String, Object>> createPayment(String paymentDetails,
+                                                             String voucherType,
+                                                             int contactId,
+                                                             int companyId,
+                                                             String invoiceNo);
 
-    public PaymentDetails updatePayment(int paymentId,PaymentDetails paymentDetails);
+    public ResponseEntity<Map<String, Object>> updatePayment(String details,
+                                                             int transactionId,
+                                                             int contactId,
+                                                             String invoiceNo);
 
     public String deletePayment(int paymentId);
 }

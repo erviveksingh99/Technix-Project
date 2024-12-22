@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -21,26 +20,23 @@ public class PaymentDetailsController {
     public ResponseEntity<Map<String, Object>> createPayment(@RequestParam("paymentDetails") String paymentDetails,
                                                              @RequestParam("voucherType") String voucherType,
                                                              @RequestParam("contactId") int contactId,
-                                                             @RequestParam("branchId") int branchId,
+                                                             @RequestParam("invoiceNo") String invoiceNo,
                                                              @RequestParam("companyId") int companyId) {
-        List<PaymentDetails> paymentResponse = paymentDetailsService.
-                createPayment(paymentDetails,
-                        voucherType,
-                        contactId,
-                        companyId,
-                        branchId);
-        Map<String, Object> response = new HashMap<>();
-        response.put("data", paymentResponse);
-        response.put("status", true);
-        return ResponseEntity.ok(response);
+        return paymentDetailsService.createPayment(paymentDetails,
+                voucherType,
+                contactId,
+                companyId,
+                invoiceNo);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Map<String, Object>> updatePayment(@PathVariable("paymentId") int paymentId, @RequestBody PaymentDetails paymentDetails) {
-        PaymentDetails paymentResponse = paymentDetailsService.updatePayment(paymentId, paymentDetails);
-        Map<String, Object> response = new HashMap<>();
-        response.put("data", paymentResponse);
-        response.put("status", true);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Map<String, Object>> updatePayment(@RequestParam("details") String details,
+                                                             @RequestParam("transactionId") int transactionId,
+                                                             @RequestParam("contactId") int contactId,
+                                                             @RequestParam("invoiceNo") String invoiceNo) {
+        return paymentDetailsService.updatePayment(details,
+                transactionId,
+                contactId,
+                invoiceNo);
     }
 }

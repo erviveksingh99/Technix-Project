@@ -52,7 +52,7 @@ public class PaymentDetails {
     private String invoiceNo;
     private String refNo;  // billId
     private String dueDate;
-    private LocalDate invoiceDate;
+    private String invoiceDate;
     private double billAmount;
     private double amountDue;
     private double payment;
