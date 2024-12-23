@@ -77,7 +77,11 @@ public class BillServiceImpl implements BillService {
                 Bill bill = new Bill();
                 bill.setCompanyId(billDTO.getCompanyId());
                 bill.setBillDate(billDTO.getBillDate());
-                bill.setInvoiceNo(billDTO.getInvoiceNo());
+                int maxInvoiceNo = billRepo.findMaxInvoiceNo(billDTO.getCompanyId()) + 1;  // Get max invoice no and increment
+                String newInvoiceNo = "TAX/24-25/" + maxInvoiceNo;  // Append the new number to the prefix
+                bill.setInvoiceNo(newInvoiceNo);  // Set the new invoice number
+
+                //  bill.setInvoiceNo("TAX/24-25/"+billRepo.findMaxInvoiceNo(billDTO.getCompanyId())+1);
                 bill.setReferenceNo(billDTO.getReferenceNo());
                 bill.setTransactionId(savedTransaction.getTransactionId());
                 bill.setDueDate(billDTO.getDueDate());
