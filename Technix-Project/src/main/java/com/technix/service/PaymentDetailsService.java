@@ -1,7 +1,9 @@
 package com.technix.service;
 
+import com.technix.entity.PaymentDetails;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
 import java.util.Map;
 
 public interface PaymentDetailsService {
@@ -10,12 +12,15 @@ public interface PaymentDetailsService {
                                                              String voucherType,
                                                              int contactId,
                                                              int companyId,
-                                                             String invoiceNo);
+                                                             String invoiceNo,
+                                                             double totalPayment);
 
     public ResponseEntity<Map<String, Object>> updatePayment(String details,
                                                              int transactionId,
                                                              int contactId,
                                                              String invoiceNo);
 
-    public String deletePayment(int paymentId);
+    public List<PaymentDetails> getPaymentByReceiptNo(int receiptNo);
+
+    public ResponseEntity<Map<String, Object>> deletePayment(int receiptNo, int transactionId);
 }

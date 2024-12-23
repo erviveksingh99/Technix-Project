@@ -25,7 +25,7 @@ public class PaymentDetails {
     @Column(name = "transaction_id", insertable = true, updatable = true)
     private int transactionId;
 
-    private String receiptNo;
+    private int receiptNo;
     private String voucherType;
     private LocalDate transactionDate;
     private int contactId;
