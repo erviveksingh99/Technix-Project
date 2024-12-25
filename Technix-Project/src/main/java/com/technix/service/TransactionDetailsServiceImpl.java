@@ -1,9 +1,11 @@
 package com.technix.service;
 
 import com.technix.custome.IdNotFoundException;
+import com.technix.entity.FinancialPeriod;
 import com.technix.entity.Ledger;
 import com.technix.entity.TransactionDetails;
 import com.technix.entity.TransactionMain;
+import com.technix.repository.FinancialPeriodRepository;
 import com.technix.repository.LedgerRepository;
 import com.technix.repository.TransactionDetailsRepository;
 import com.technix.repository.TransactionMainRepository;
@@ -31,6 +33,9 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
     @Autowired
     private LedgerRepository ledgerRepo;
 
+    @Autowired
+    private FinancialPeriodRepository financialPeriodRepo;
+
     @Transactional
     @Override
     public TransactionMain createTransactionDetails(TransactionMain transactionMain,
@@ -39,7 +44,7 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
                                                     Double total,
                                                     String chequeNo,
                                                     LocalDate chequeDate,
-                                                    String referenceNo,
+                                                    LocalDate transactionDate, String referenceNo,
                                                     String mode, int branchId) {
 
         JSONArray array = new JSONArray(details);
@@ -52,7 +57,10 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
         transactionMain1.setVoucherType(transactionMain.getVoucherType());
         transactionMain1.setVoucherNo(transactionMainRepo.findMaxVoucherNo(transactionMain.getVoucherType(), transactionMain.getCompanyId()) + 1);
         transactionMain1.setFinancialPeriodId(transactionMain.getFinancialPeriodId());
-        transactionMain1.setTransactionDate(LocalDate.now());
+        transactionMain1.setTransactionDate(transactionDate);
+
+        //Checking financial period date:
+        checkFinancialPeriod(transactionMain.getFinancialPeriodId(), transactionDate);
 
         TransactionMain savedTransaction = transactionMainRepo.save(transactionMain1);
 
@@ -118,7 +126,8 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
             transactionDetailsItem.setDebit(jsonObject.optDouble("debit", 0.0));
             transactionDetailsItem.setCredit(jsonObject.optDouble("credit", 0.0));
             transactionDetailsItem.setDBcR(jsonObject.optString("dBcR", jsonObject.getString("dBcR")));
-            transactionDetailsItem.setFinancialPeriodId(jsonObject.getInt("financialPeriodID"));
+           // transactionDetailsItem.setFinancialPeriodId(jsonObject.getInt("financialPeriodID"));
+            transactionDetailsItem.setFinancialPeriodId(savedTransaction.getFinancialPeriodId());
             transactionDetailsItem.setRefNo(referenceNo);
             transactionDetailsItem.setParticularsId(jsonObject.optInt("particularsId", 0));
             transactionDetailsItem.setParticulars(jsonObject.optString("particulars", null));
@@ -134,13 +143,13 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
             transactionDetailsItem.setRefNo(referenceNo != null ? referenceNo : "");
             //  transactionDetailsItem.setBranchId(jsonObject.optInt("branchId", 0));
             transactionDetailsItem.setBranchId(branchId);
-            transactionDetailsItem.setCompanyId(jsonObject.optInt("companyId", 0));
-            transactionDetailsItem.setTransactionDate(LocalDate.now());
+           // transactionDetailsItem.setCompanyId(jsonObject.optInt("companyId", 0));
+            transactionDetailsItem.setCompanyId(savedTransaction.getCompanyId());
+            transactionDetailsItem.setTransactionDate(savedTransaction.getTransactionDate());
             transactionDetailsItem.setCreationDate(LocalDateTime.now());
 
             transactionDetailsList.add(transactionDetailsItem);
         }
-
         try {
             transactionDetailsRepo.saveAll(transactionDetailsList);
         } catch (ResponseStatusException e) {
@@ -149,6 +158,22 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
         return savedTransaction;
     }
 
+    private boolean checkFinancialPeriod(int financialPeriodId, LocalDate transactionDate) {
+        Optional<FinancialPeriod> financialPeriod = financialPeriodRepo.findById(financialPeriodId);
+        if (financialPeriod.isEmpty()) {
+            throw new IdNotFoundException("Financial period id not found");
+        }
+
+        FinancialPeriod fp = financialPeriod.get();
+
+        // Check if the transaction date is outside the financial period
+        if (transactionDate.isBefore(fp.getSDate()) || transactionDate.isAfter(fp.getEDate())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Financial period is not matched");
+        }
+
+        // If everything is valid, return true
+        return true;
+    }
 
     @Override
     public ResponseEntity<List<TransactionDetails>> getTransactionDetailsByTransactionNo(int transactionNo) {

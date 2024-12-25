@@ -6,7 +6,6 @@ import com.technix.service.TransactionDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -26,10 +25,20 @@ public class TransactionDetailsController {
                                                                         @RequestParam("totalAmount") Double totalAmount,
                                                                         @RequestParam(value = "chequeNo", required = false) String chequeNo,
                                                                         @RequestParam(value = "chequeDate", required = false) LocalDate chequeDate,
+                                                                        @RequestParam(value = "transactionDate", required = true) LocalDate transactionDate,
                                                                         @RequestParam(value = "referenceNo", required = false) String referenceNo,
                                                                         @RequestParam("mode") String mode,
                                                                         @RequestParam("branchId") int branchId) {
-        TransactionMain transactionResponse = detailsService.createTransactionDetails(transactionMain, details, ledgerId, totalAmount, chequeNo, chequeDate, referenceNo, mode, branchId);
+        TransactionMain transactionResponse = detailsService.createTransactionDetails(transactionMain,
+                details,
+                ledgerId,
+                totalAmount,
+                chequeNo,
+                chequeDate,
+                transactionDate,
+                referenceNo,
+                mode,
+                branchId);
         Map<String, Object> response = new HashMap<>();
         response.put("details", transactionResponse);
         response.put("status", true);

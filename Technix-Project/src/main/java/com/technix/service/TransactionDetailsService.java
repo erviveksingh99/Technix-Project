@@ -10,7 +10,16 @@ import java.util.Map;
 
 public interface TransactionDetailsService {
 
-    public TransactionMain createTransactionDetails(TransactionMain transactionMain, String transactionDetails, Integer ledgerId, Double total, String chequeNo, LocalDate chequeDate, String referenceNo, String mode, int branchId);
+    public TransactionMain createTransactionDetails(TransactionMain transactionMain,
+                                                    String transactionDetails,
+                                                    Integer ledgerId,
+                                                    Double total,
+                                                    String chequeNo,
+                                                    LocalDate chequeDate,
+                                                    LocalDate transactionDate,
+                                                    String referenceNo,
+                                                    String mode,
+                                                    int branchId);
 
    // public ResponseEntity<TransactionDetails> updateTransactionDetails(TransactionMain transactionMain, String transactionDetails);
 
