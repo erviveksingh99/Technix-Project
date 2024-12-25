@@ -4,8 +4,10 @@ import com.technix.custome.IdNotFoundException;
 import com.technix.custome.PictureNotFoundException;
 import com.technix.entity.Company;
 import com.technix.entity.Customer;
+import com.technix.entity.FinancialPeriod;
 import com.technix.repository.CompanyRepository;
 import com.technix.repository.CustomerRepository;
+import com.technix.repository.FinancialPeriodRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -36,8 +39,11 @@ public class CompanyServiceImpl implements CompanyService {
     @Autowired
     private CustomerRepository customerRepo;
 
+    @Autowired
+    private FinancialPeriodRepository financialPeriodRepo;
+
     @Override
-    public ResponseEntity<Map<String, Object>> createCompany(Company cmp, MultipartFile logo, int customerId) {
+    public ResponseEntity<Map<String, Object>> createCompany(Company cmp, MultipartFile logo, int customerId, LocalDate startDate, LocalDate endDate) {
         Optional<Customer> customer = customerRepo.findById(customerId);
         if (customer.isPresent()) {
             cmp.setCustomerId(customerId);
@@ -80,7 +86,21 @@ public class CompanyServiceImpl implements CompanyService {
                     cmp.setImageUrl(imageUrl + cmpId);
 
                     // Save the updated company entity with the logo path
-                    companyRepo.save(cmp);
+                    Company company = companyRepo.save(cmp);
+
+                    //Creating financial period:
+                    FinancialPeriod financialPeriod = new FinancialPeriod();
+                    financialPeriod.setCompanyId(company.getCompanyId());
+                    financialPeriod.setSDate(startDate);
+                    financialPeriod.setEDate(endDate);
+                    financialPeriod.setStatus(true);
+
+                    try {
+                        financialPeriodRepo.save(financialPeriod);
+                    } catch (Exception e) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Financial Period data saving failed reason: " + e.getMessage());
+                    }
+
                 } catch (IOException e) {
                     throw new Exception("Failed to save company logo: " + e.getMessage());
                 }
@@ -135,7 +155,7 @@ public class CompanyServiceImpl implements CompanyService {
                     // Set the relative path to be stored in the Company entity (not the absolute path)
                     String relativeLogoPath = companyDirectoryWithId + "/" + cmpId;
                     cmp.setLogo(relativeLogoPath);
-                    cmp.setImageUrl(imageUrl+cmpId);
+                    cmp.setImageUrl(imageUrl + cmpId);
                 } catch (IOException e) {
                     throw new Exception("Failed to save company logo: " + e.getMessage());
                 }
@@ -165,9 +185,8 @@ public class CompanyServiceImpl implements CompanyService {
         // Fetch companies based on customerId
         List<Company> companies = companyRepo.findByCustomerId(customerId);
 
-        for(int i=0; i<companies.size(); i++)
-        {
-            companies.get(i).setImageUrl(imageUrl+companies.get(i).getCompanyId());
+        for (int i = 0; i < companies.size(); i++) {
+            companies.get(i).setImageUrl(imageUrl + companies.get(i).getCompanyId());
         }
         // Return the list of companies in the response
         return ResponseEntity.ok(companies);

@@ -4,12 +4,14 @@ import com.technix.entity.Company;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
 public interface CompanyService {
 
-    public ResponseEntity<Map<String, Object>> createCompany(Company cmp, MultipartFile logo, int customerId);
+    public ResponseEntity<Map<String, Object>> createCompany(Company cmp, MultipartFile logo, int customerId, LocalDate startDate, LocalDate endDate);
 
     public ResponseEntity<Map<String, Object>> updateCompany(Company cmp, MultipartFile logo, int customerId) throws Exception;
 

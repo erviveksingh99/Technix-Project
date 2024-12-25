@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +45,9 @@ public class CompanyController {
                                                              @RequestParam(value = "Logo", required = false) MultipartFile logo,
                                                              @RequestParam(value = "LogoPosition", required = false) String logoPosition,
                                                              @RequestParam(value = "Logo_on_invoice", required = false) boolean logoOnInvoice,
-                                                             @RequestParam("CreatedBy") int createdBy) {
+                                                             @RequestParam("CreatedBy") int createdBy,
+                                                             @RequestParam("startDate") LocalDate startDate,
+                                                             @RequestParam("endDate") LocalDate endDate) {
 
         Company cmp = new Company();
         cmp.setCompanyName(companyName);
@@ -65,7 +68,7 @@ public class CompanyController {
         cmp.setCreatedBy(createdBy);
         cmp.setCreatedAt(LocalDateTime.now());
         cmp.setRegistrationDate(LocalDateTime.now());
-        return companyService.createCompany(cmp, logo, customerId);
+        return companyService.createCompany(cmp, logo, customerId, startDate, endDate);
     }
 
 
