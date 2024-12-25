@@ -5,9 +5,8 @@ import com.technix.custome.PictureNotFoundException;
 import com.technix.entity.Account;
 import com.technix.entity.Contacts;
 import com.technix.entity.Ledger;
-import com.technix.repository.AccountRepository;
-import com.technix.repository.ContactsRepository;
-import com.technix.repository.LedgerRepository;
+import com.technix.entity.OpeningBalance;
+import com.technix.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +47,12 @@ public class ContactsServiceImpl implements ContactsService {
         this.ledgerRepo = ledgerRepo;
         this.passwordEncoder = passwordEncoder;
     }
+
+    @Autowired
+    private OpeningBalanceRepository openingBalanceRepo;
+
+    @Autowired
+    private FinancialPeriodRepository financialPeriodRepo;
 
     @Value("${upload.dir}")
     private String uploadDir;
@@ -90,6 +96,21 @@ public class ContactsServiceImpl implements ContactsService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Database communication failed");
         }
 
+        // Creating opening balance
+        OpeningBalance openingBalance = new OpeningBalance();
+        openingBalance.setCompanyId(contacts.getCompanyId());
+        openingBalance.setOpeningBalance(contacts.getOppeningBalance());
+        openingBalance.setLedgerId(l1.getLedgerId());
+       // financialPeriodRepo
+        openingBalance.setFinancialPeriodId(1);
+        openingBalance.setCrDr(contacts.getOppeningType());
+        openingBalance.setOpeningBalanceDate(LocalDate.now());
+        try {
+            openingBalanceRepo.save(openingBalance);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Opening balance saving failed reason: " + e.getMessage());
+        }
+
         //****************************************************
         // Handle profile picture upload
         if (profilePic != null && !profilePic.isEmpty()) {
@@ -128,6 +149,7 @@ public class ContactsServiceImpl implements ContactsService {
         if (contactsOptional.isPresent()) {
             try {
                 Contacts contacts1 = contactsOptional.get();
+
                 contacts1.setContactId(contactId);
                 contacts1.setCompanyId(contacts.getCompanyId());
                 contacts1.setContactsType(contacts.getContactsType());
@@ -213,8 +235,8 @@ public class ContactsServiceImpl implements ContactsService {
                 if (ledgerOptional.isPresent()) {
                     newLedger = ledgerOptional.get();
 
-                 //   log.info("Ledger: {}", newLedger.getLedgerId());
-                    System.out.println("Ledger id is : "+newLedger.getLedgerId());
+                    //   log.info("Ledger: {}", newLedger.getLedgerId());
+                    // System.out.println("Ledger id is : " + newLedger.getLedgerId());
 
                     Optional<Account> optionalAccount = accountRepo.findById(contacts.getAccountId());
                     Account account = null;
@@ -242,15 +264,37 @@ public class ContactsServiceImpl implements ContactsService {
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ledger data is not updated");
                     }
                     contacts1.setLedgerId(l1.getLedgerId());
+
+                    try {
+                        openingBalanceRepo.deleteByLedgerId(contacts.getLedgerId());
+                    } catch (Exception e) {
+                        throw new IdNotFoundException("Ledger id is invalid");
+                    }
+
+                    if (contacts.getOppeningBalance() > 0) {
+                        // Creating opening balance
+                        OpeningBalance openingBalance = new OpeningBalance();
+                        openingBalance.setCompanyId(contacts.getCompanyId());
+                        openingBalance.setOpeningBalance(contacts.getOppeningBalance());
+                        openingBalance.setLedgerId(contacts.getLedgerId());
+                        openingBalance.setFinancialPeriodId(1);
+                        openingBalance.setCrDr(contacts.getOppeningType());
+                        openingBalance.setOpeningBalanceDate(LocalDate.now());
+                        try {
+                            openingBalanceRepo.save(openingBalance);
+                        } catch (Exception e) {
+                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Opening balance saving failed reason: " + e.getMessage());
+                        }
+                    }
+
                 } else {
                     throw new IdNotFoundException("Ledger id not found");
                 }
                 return ResponseEntity.ok(contactsRepo.save(contacts1));
             } catch (Exception e) {
-                log.error("Failed to update contact: {}" + e.getMessage(), e); // Use a logger here
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Database communication failed in contacts");
+                //  log.error("Failed to update contact: {}" + e.getMessage(), e); // Use a logger here
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Database communication failed in contacts reason: " + e.getMessage());
             }
-
         } else {
             throw new IdNotFoundException("Contact Id not found");
         }

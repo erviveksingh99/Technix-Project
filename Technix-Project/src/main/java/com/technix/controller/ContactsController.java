@@ -42,7 +42,7 @@ public class ContactsController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/getContact/{contactId}")
+    @GetMapping("/getContact")
     public ResponseEntity<Map<String, Object>> getContactsById(@RequestParam("contactId") int contactId) {
         Contacts contacts = contactsService.getContactsById(contactId).getBody();
         Map<String, Object> response = new HashMap<>();
@@ -51,7 +51,7 @@ public class ContactsController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/getContactByCompany/{companyId}")
+    @GetMapping("/getContactByCompany")
     public ResponseEntity<Map<String, Object>> getContactsByCompanyId(@RequestParam("companyId") int companyId) {
         List<Contacts> contactsList = contactsService.getContactsByCompanyId(companyId).getBody();
         Map<String, Object> response = new HashMap<>();
@@ -60,12 +60,12 @@ public class ContactsController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/profilePic/{contactId}")
+    @GetMapping("/profilePic")
     public ResponseEntity<UrlResource> getContactProfilePic(@RequestParam("contactId") int contactId) throws MalformedURLException, FileNotFoundException {
         return contactsService.getContactProfilePic(contactId);
     }
 
-    @DeleteMapping("/delete/{contactId}")
+    @DeleteMapping("/delete")
     public ResponseEntity<Map<String, Object>> deleteContacts(@RequestParam("contactId") int contactId) {
         return contactsService.deleteContacts(contactId);
     }
