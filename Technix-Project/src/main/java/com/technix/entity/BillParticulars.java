@@ -49,6 +49,7 @@ public class BillParticulars {
     private double discPer;
     private double discount;
     private double amount;
+    private int texId;
     private String taxType;
     private String taxationType;
     private String taxPer;

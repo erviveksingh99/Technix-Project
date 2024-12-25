@@ -55,6 +55,8 @@ public class Bill {
     private double discPer;
     private double discount;
     private double otherCharges;
+    private double globalDisc;    //  new added
+    private double globalDiscPer; // new added
     private double totalTaxes;
     private double roundOff;
     private double grandTotal;

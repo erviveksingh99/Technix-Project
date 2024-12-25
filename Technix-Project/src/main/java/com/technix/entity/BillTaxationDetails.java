@@ -24,6 +24,7 @@ public class BillTaxationDetails {
 
     private LocalDate billingDate;
     private double taxableValue;
+    private int taxId;
     private String taxType;
     private String taxName;
     private double taxPer;
