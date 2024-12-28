@@ -201,8 +201,8 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
 
         for (Object[] result : results) {
             String transactionDateFormatted = (String) result[0];
-            Double debit = (result[1] != null) ? ((Number) result[1]).doubleValue() : 0.0;  // Safely cast to Double
-            Double credit = (result[2] != null) ? ((Number) result[2]).doubleValue() : 0.0;  // Safely cast to Double
+            Double debit = (result[1] != null) ? ((Number) result[1]).doubleValue() : 0.0;
+            Double credit = (result[2] != null) ? ((Number) result[2]).doubleValue() : 0.0;
 
             MonthlyTransactionSummary summary = new MonthlyTransactionSummary(transactionDateFormatted, debit, credit);
             summaries1.add(summary);
