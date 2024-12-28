@@ -18,4 +18,5 @@ public interface BillService {
     public ResponseEntity<List<Bill>> getBillByCompanyId(int companyId);
 
     public ResponseEntity<Map<String, Object>> deleteBillById(int billId);
+
 }

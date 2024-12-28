@@ -27,8 +27,8 @@ public class BillController {
     }
 
     @PutMapping("/update/{billId}")
-    public ResponseEntity<Map<String, Object>> updateBill(@PathVariable("billId") int billId,@RequestBody BillDTO billDTO) {
-        Bill billResponse = billService.updateBill(billId,billDTO).getBody();
+    public ResponseEntity<Map<String, Object>> updateBill(@PathVariable("billId") int billId, @RequestBody BillDTO billDTO) {
+        Bill billResponse = billService.updateBill(billId, billDTO).getBody();
         Map<String, Object> response = new HashMap<>();
         response.put("data", billResponse);
         response.put("status", true);
@@ -57,4 +57,6 @@ public class BillController {
     public ResponseEntity<Map<String, Object>> deleteBillById(@PathVariable("billId") int billId) {
         return billService.deleteBillById(billId);
     }
+
+
 }

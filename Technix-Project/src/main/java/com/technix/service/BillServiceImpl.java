@@ -31,6 +31,7 @@ public class BillServiceImpl implements BillService {
     private TransactionMainRepository transactionMainRepo;
     private TransactionDetailsRepository transactionDetailsRepo;
 
+
     @Autowired
     public BillServiceImpl(BillRepository billRepo,
                            BillParticularsRepository billParticularsRepo,
@@ -104,8 +105,12 @@ public class BillServiceImpl implements BillService {
                 bill.setStatus(billDTO.getStatus());
                 bill.setBranchId(billDTO.getBranchId());
                 bill.setCreatedBy(billDTO.getCreatedBy());
-
-                Bill savedBill = billRepo.save(bill);
+                Bill savedBill = null;
+                try {
+                    billRepo.save(bill);
+                } catch (Exception e) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bill data saving failed reason: " + e.getMessage());
+                }
 
                 List<BillParticularsDTO> billParticularsDTOS = billDTO.getBillParticularsDTO();
                 for (int i = 0; i < billParticularsDTOS.size(); i++) {
@@ -132,8 +137,11 @@ public class BillServiceImpl implements BillService {
                     billParticulars.setTaxableValue(particularsDTO.getTaxableValue());
                     billParticulars.setBranchId(savedBill.getBranchId());
                     billParticulars.setCompanyId(savedBill.getCompanyId());
-
-                    billParticularsRepo.save(billParticulars);
+                    try {
+                        billParticularsRepo.save(billParticulars);
+                    } catch (Exception e) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bill particulars data saving failed reason: " + e.getMessage());
+                    }
                 }
                 List<BillTaxationDetailsDTO> billTaxationDetailsDTOS = billDTO.getBillTaxationDetailsDTO();
 
@@ -148,7 +156,11 @@ public class BillServiceImpl implements BillService {
                     details.setTaxPer(taxationDetailsDTO.getTaxPer());
                     details.setTaxAmount(taxationDetailsDTO.getTaxAmount());
 
-                    billTaxationDetailsRepo.save(details);
+                    try {
+                        billTaxationDetailsRepo.save(details);
+                    } catch (Exception e) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bill Taxation Details data saving failed reason: " + e.getMessage());
+                    }
                 }
 
                 // 1st entry for Credit
