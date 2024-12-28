@@ -1,6 +1,7 @@
 package com.technix.service;
 
 import com.technix.custome.IdNotFoundException;
+import com.technix.dto.MonthlyTransactionSummary;
 import com.technix.entity.FinancialPeriod;
 import com.technix.entity.Ledger;
 import com.technix.entity.TransactionDetails;
@@ -126,7 +127,7 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
             transactionDetailsItem.setDebit(jsonObject.optDouble("debit", 0.0));
             transactionDetailsItem.setCredit(jsonObject.optDouble("credit", 0.0));
             transactionDetailsItem.setDBcR(jsonObject.optString("dBcR", jsonObject.getString("dBcR")));
-           // transactionDetailsItem.setFinancialPeriodId(jsonObject.getInt("financialPeriodID"));
+            // transactionDetailsItem.setFinancialPeriodId(jsonObject.getInt("financialPeriodID"));
             transactionDetailsItem.setFinancialPeriodId(savedTransaction.getFinancialPeriodId());
             transactionDetailsItem.setRefNo(referenceNo);
             transactionDetailsItem.setParticularsId(jsonObject.optInt("particularsId", 0));
@@ -143,7 +144,7 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
             transactionDetailsItem.setRefNo(referenceNo != null ? referenceNo : "");
             //  transactionDetailsItem.setBranchId(jsonObject.optInt("branchId", 0));
             transactionDetailsItem.setBranchId(branchId);
-           // transactionDetailsItem.setCompanyId(jsonObject.optInt("companyId", 0));
+            // transactionDetailsItem.setCompanyId(jsonObject.optInt("companyId", 0));
             transactionDetailsItem.setCompanyId(savedTransaction.getCompanyId());
             transactionDetailsItem.setTransactionDate(savedTransaction.getTransactionDate());
             transactionDetailsItem.setCreationDate(LocalDateTime.now());
@@ -170,7 +171,6 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
         if (transactionDate.isBefore(fp.getSDate()) || transactionDate.isAfter(fp.getEDate())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Financial period is not matched");
         }
-
         // If everything is valid, return true
         return true;
     }
@@ -192,5 +192,21 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
         } else {
             throw new IdNotFoundException("Id not found");
         }
+    }
+
+    @Override
+    public List<MonthlyTransactionSummary> getMonthlyTransactionSummary(int ledgerId, String startDate, String endDate) {
+        List<Object[]> results = transactionDetailsRepo.findMonthlyTransactionSummaryNative(ledgerId,  startDate,  endDate);
+        List<MonthlyTransactionSummary> summaries1 = new ArrayList<>();
+
+        for (Object[] result : results) {
+            String transactionDateFormatted = (String) result[0];
+            Double debit = (result[1] != null) ? ((Number) result[1]).doubleValue() : 0.0;  // Safely cast to Double
+            Double credit = (result[2] != null) ? ((Number) result[2]).doubleValue() : 0.0;  // Safely cast to Double
+
+            MonthlyTransactionSummary summary = new MonthlyTransactionSummary(transactionDateFormatted, debit, credit);
+            summaries1.add(summary);
+        }
+        return summaries1;
     }
 }

@@ -10,14 +10,34 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TransactionDetailsRepository  extends JpaRepository<TransactionDetails, Integer> {
+public interface TransactionDetailsRepository extends JpaRepository<TransactionDetails, Integer> {
     List<TransactionDetails> findByTransactionNo(int transactionNo);
-
-
-   // void deleteByTransactionId(int transactionId);
 
     @Modifying
     @Transactional
     @Query("DELETE FROM TransactionDetails td WHERE td.transactionId = :transactionId")
     void deleteByTransactionId(@Param("transactionId") int transactionId);
+
+    // running
+   /* @Query(value = "SELECT date_format(t.transaction_date, '%m-%Y') AS transactionDateFormatted, " +
+            "SUM(t.debit) AS debit, SUM(t.credit) AS credit " +
+            "FROM tbltransaction t " +
+            "WHERE t.ledger_id = :ledgerId " +
+            "GROUP BY date_format(t.transaction_date, '%m-%Y')", nativeQuery = true)
+    List<Object[]> findMonthlyTransactionSummaryNative(@Param("ledgerId") int ledgerId);
+*/
+
+    @Query(value = "SELECT " +
+            "DATE_FORMAT(t.transaction_date, '%m-%Y') AS transaction_date_formatted, " +
+            "SUM(t.debit) AS Debit, " +
+            "SUM(t.credit) AS Credit " +
+            "FROM tbltransaction t " +
+            "WHERE t.ledger_id = :ledgerId " +
+            "AND t.transaction_date BETWEEN :startDate AND :endDate " +
+            "GROUP BY DATE_FORMAT(t.transaction_date, '%m-%Y')",
+            nativeQuery = true)
+    List<Object[]> findMonthlyTransactionSummaryNative(@Param("ledgerId") int ledgerId,
+                                                       @Param("startDate") String startDate,
+                                                       @Param("endDate") String endDate);
+
 }

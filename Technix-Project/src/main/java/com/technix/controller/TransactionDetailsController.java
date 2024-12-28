@@ -1,5 +1,6 @@
 package com.technix.controller;
 
+import com.technix.dto.MonthlyTransactionSummary;
 import com.technix.entity.TransactionDetails;
 import com.technix.entity.TransactionMain;
 import com.technix.service.TransactionDetailsService;
@@ -54,9 +55,19 @@ public class TransactionDetailsController {
         return ResponseEntity.ok(response);
     }
 
-
     @DeleteMapping("/delete/{transactionDetailsId}")
     public ResponseEntity<Map<String, Object>> deleteTransactionDetailsById(@RequestParam("transactionDetailsId") int transactionDetailsId) {
         return detailsService.deleteTransactionDetailsById(transactionDetailsId);
+    }
+
+
+    @GetMapping("/MonthlyTransactionSummary/{ledgerId}")
+    public ResponseEntity<List<MonthlyTransactionSummary>> getMonthlyTransactionSummary(
+            @PathVariable("ledgerId") int ledgerId,
+            @RequestParam("startDate")  String startDate,
+            @RequestParam("endDate")  String endDate) {
+
+        List<MonthlyTransactionSummary> transactionSummary = detailsService.getMonthlyTransactionSummary(ledgerId, startDate, endDate);
+        return ResponseEntity.ok(transactionSummary);
     }
 }

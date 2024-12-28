@@ -1,9 +1,9 @@
 package com.technix.service;
 
+import com.technix.dto.MonthlyTransactionSummary;
 import com.technix.entity.TransactionDetails;
 import com.technix.entity.TransactionMain;
 import org.springframework.http.ResponseEntity;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -26,4 +26,6 @@ public interface TransactionDetailsService {
     public ResponseEntity<List<TransactionDetails>> getTransactionDetailsByTransactionNo(int transactionNo);
 
     public ResponseEntity<Map<String, Object>> deleteTransactionDetailsById(int transactionDetailsId);
+
+    public List<MonthlyTransactionSummary> getMonthlyTransactionSummary(int ledgerId, String startDate, String endDate);
 }
