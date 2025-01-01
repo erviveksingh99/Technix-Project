@@ -6,6 +6,7 @@ import com.technix.service.PurchaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import javax.sound.midi.InvalidMidiDataException;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,28 +27,26 @@ public class PurchaseController {
         return ResponseEntity.ok(response);
     }
 
- /*@PutMapping("/{id}")
-    public ResponseEntity<Purchase> updatePurchase(@PathVariable Integer id, @RequestBody Purchase purchaseDetails) {
-        Purchase updatedPurchase = purchaseService.updatePurchase(id, purchaseDetails);
-        return ResponseEntity.ok(updatedPurchase);
+    @PutMapping("update/{id}")
+    public ResponseEntity<Map<String, Object>> updatePurchase(@PathVariable Integer id, @RequestBody PurchaseDTO purchaseDTO) {
+        Purchase updatedPurchase = purchaseService.updatePurchase(id, purchaseDTO);
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", updatedPurchase);
+        response.put("status", true);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Purchase> getPurchaseById(@PathVariable Integer id) {
-        Purchase purchase = purchaseService.getPurchaseById(id);
-        return ResponseEntity.ok(purchase);
+    @GetMapping("/getPurchase/{purchaseId}")
+    public ResponseEntity<Map<String, Object>> getPurchaseById(@PathVariable("purchaseId") Integer purchaseId) {
+        Purchase purchaseResponse = purchaseService.getPurchaseById(purchaseId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", purchaseResponse);
+        response.put("status", true);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping
-    public ResponseEntity<List<Purchase>> getAllPurchases() {
-        List<Purchase> purchases = purchaseService.getAllPurchases();
-        return ResponseEntity.ok(purchases);
+    @DeleteMapping("/delete/{purchaseId}")
+    public ResponseEntity<Map<String, Object>> deletePurchase(@PathVariable("purchaseId") Integer purchaseId) {
+        return purchaseService.deletePurchase(purchaseId);
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePurchase(@PathVariable Integer id) {
-        purchaseService.deletePurchase(id);
-        return ResponseEntity.noContent().build();
-    }
-*/
 }

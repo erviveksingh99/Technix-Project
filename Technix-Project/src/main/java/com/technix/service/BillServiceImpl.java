@@ -6,6 +6,7 @@ import com.technix.dto.BillParticularsDTO;
 import com.technix.dto.BillTaxationDetailsDTO;
 import com.technix.entity.*;
 import com.technix.repository.*;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -51,6 +52,7 @@ public class BillServiceImpl implements BillService {
     final static String ledgerName = "Sales A/c";
     final static String voucherType = "Sales";
 
+    @Transactional
     @Override
     public ResponseEntity<Bill> createBill(BillDTO billDTO) {
 
@@ -239,6 +241,7 @@ public class BillServiceImpl implements BillService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseEntity<Bill> updateBill(int billId, BillDTO billDTO) {
 
@@ -439,11 +442,18 @@ public class BillServiceImpl implements BillService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseEntity<Map<String, Object>> deleteBillById(int billId) {
         Optional<Bill> bill = billRepo.findById(billId);
         if (bill.isPresent()) {
             billRepo.deleteById(billId);
+            billParticularsRepo.deleteByBillId(billId);
+            billTaxationDetailsRepo.deleteByBillId(billId);
+            //    BillAdditionalCharges  ==> This is pending.
+            Bill bill1 = bill.get();
+            transactionDetailsRepo.deleteByTransactionId(bill1.getTransactionId());
+            transactionMainRepo.deleteById(bill1.getTransactionId());
             Map<String, Object> response = new HashMap<>();
             response.put("status", true);
             response.put("message", "Bill data is deleted with id " + billId);

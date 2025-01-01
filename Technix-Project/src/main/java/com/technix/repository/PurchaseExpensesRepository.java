@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PurchaseExpensesRepository extends JpaRepository<PurchaseExpenses, Integer> {
+    void deleteByPurchaseId(int purchaseId);
 }

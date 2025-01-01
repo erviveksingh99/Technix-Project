@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PurchaseProductTaxesRepository extends JpaRepository<PurchaseProductTaxes, Integer> {
-
+    void deleteByPurchaseId(int purchaseId);
 }

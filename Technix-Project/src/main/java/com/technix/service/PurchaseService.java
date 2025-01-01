@@ -2,18 +2,17 @@ package com.technix.service;
 
 import com.technix.dto.PurchaseDTO;
 import com.technix.entity.Purchase;
+import org.springframework.http.ResponseEntity;
 
 import javax.sound.midi.InvalidMidiDataException;
-import java.util.List;
+import java.util.Map;
 
 public interface PurchaseService {
     Purchase createPurchase(PurchaseDTO purchaseDTO) throws InvalidMidiDataException;
 
-//    Purchase updatePurchase(Integer purchaseId, Purchase purchaseDetails);
-//
-//    Purchase getPurchaseById(Integer purchaseId);
-//
-//    List<Purchase> getAllPurchases();
-//
-//    void deletePurchase(Integer purchaseId);
+    Purchase updatePurchase(Integer purchaseId, PurchaseDTO purchaseDTO);
+
+    Purchase getPurchaseById(Integer purchaseId);
+
+    ResponseEntity<Map<String, Object>> deletePurchase(Integer purchaseId);
 }

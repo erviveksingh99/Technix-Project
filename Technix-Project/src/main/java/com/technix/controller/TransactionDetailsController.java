@@ -64,9 +64,8 @@ public class TransactionDetailsController {
     @GetMapping("/MonthlyTransactionSummary/{ledgerId}")
     public ResponseEntity<List<MonthlyTransactionSummary>> getMonthlyTransactionSummary(
             @PathVariable("ledgerId") int ledgerId,
-            @RequestParam("startDate")  String startDate,
-            @RequestParam("endDate")  String endDate) {
-
+            @RequestParam("startDate") String startDate,
+            @RequestParam("endDate") String endDate) {
         List<MonthlyTransactionSummary> transactionSummary = detailsService.getMonthlyTransactionSummary(ledgerId, startDate, endDate);
         return ResponseEntity.ok(transactionSummary);
     }
