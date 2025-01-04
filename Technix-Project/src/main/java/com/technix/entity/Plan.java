@@ -20,10 +20,10 @@ public class Plan {
     private String features;
 
     private String description;
-
-    private double price;
+    private Double price;
     private String currency;
     private int validity;
-    private String userCount;
+    private int userCount;
     private boolean isActive;
+    private boolean trialAvailable;
 }

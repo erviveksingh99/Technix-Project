@@ -13,7 +13,7 @@ public class Customer  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-  //  @Column(name = "customer_id")
+    @Column(name = "customerId")
     private int customerId; // primary key
 
     private String full_name;
