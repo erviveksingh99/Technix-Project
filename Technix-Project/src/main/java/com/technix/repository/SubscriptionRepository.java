@@ -11,9 +11,8 @@ import java.util.Optional;
 @Repository
 public interface SubscriptionRepository extends JpaRepository<Subscription, Integer> {
 
-    // Custom query to check if a subscription exists for a customer with specific conditions
-    @Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END " +
+    @Query("SELECT s " +
             "FROM Subscription s " +
             "WHERE s.customerId = :customerId AND s.status = true AND s.isTrail = true")
-    Optional<Subscription> existsByCustomerIdAndStatusTrueAndIsTrailTrue(@Param("customerId") int customerId);
+    Optional<Subscription> findByCustomerIdAndStatusTrueAndIsTrailTrue(@Param("customerId") int customerId);
 }

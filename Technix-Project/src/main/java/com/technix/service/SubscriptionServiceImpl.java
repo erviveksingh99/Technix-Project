@@ -35,7 +35,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public Subscription getActiveSubscription(int customerId) {
-        Optional<Subscription> activeSubscription = subscriptionRepo.existsByCustomerIdAndStatusTrueAndIsTrailTrue(customerId);
+        Optional<Subscription> activeSubscription = subscriptionRepo.findByCustomerIdAndStatusTrueAndIsTrailTrue(customerId);
         if (activeSubscription.isEmpty()) {
             throw new IdNotFoundException("Customer is inactive");
         }

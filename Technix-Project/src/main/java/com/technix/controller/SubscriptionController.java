@@ -5,7 +5,6 @@ import com.technix.service.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +24,7 @@ public class SubscriptionController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/checkCustomer/{customerId}")
+    @GetMapping("/checkSubscription/{customerId}")
     public ResponseEntity<Map<String, Object>> getActiveSubscription(@PathVariable("customerId") int customerId) {
         Subscription subscription = subscriptionService.getActiveSubscription(customerId);
         Map<String, Object> response = new HashMap<>();
