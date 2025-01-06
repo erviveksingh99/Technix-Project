@@ -154,14 +154,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResponseEntity<List<Product>> getProductByCompanyId(int companyId) {
+    public List<Product> getItemWiseMasterReport(int companyId) {
         List<Product> productList = productRepo.findByCompanyId(companyId);
         if (!productList.isEmpty()) {
             for (int i = 0; i < productList.size(); i++) {
                 productList.get(i).setImageUrl(imageUrl + productList.get(i).getProductId());
                 productList.get(i).getCategory().setImageUrl(imageUrl+productList.get(i).getCategory().getCategoryId());
             }
-            return ResponseEntity.ok(productList);
+            return (productList);
         } else {
             throw new IdNotFoundException("Company id not found");
         }
@@ -193,6 +193,21 @@ public class ProductServiceImpl implements ProductService {
             throw new PictureNotFoundException("Image not found");
         }
     }
+
+    @Override
+    public List<Product> getBrandWiseMasterReport(int brandId) {
+        List<Product> productList = productRepo.findByBrandId(brandId);
+        if (!productList.isEmpty()) {
+            for (int i = 0; i < productList.size(); i++) {
+                productList.get(i).setImageUrl(imageUrl + productList.get(i).getProductId());
+                productList.get(i).getCategory().setImageUrl(imageUrl+productList.get(i).getCategory().getCategoryId());
+            }
+            return (productList);
+        } else {
+            throw new IdNotFoundException("Brand id not found");
+        }
+    }
+
 
     @Override
     public ResponseEntity<Map<String, Object>> deleteProduct(int productId) {

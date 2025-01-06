@@ -56,7 +56,7 @@ public class ProductController {
     @GetMapping("/getProductId/{productId}")
 //    @JsonView(Views.ParentCategoryView.class)
     @JsonView(Views.ParentView.class)
-    public ResponseEntity<Map<String, Object>> getProductById(@RequestParam("ProductById") int productId) {
+    public ResponseEntity<Map<String, Object>> getProductById(@PathVariable("productId") int productId) {
         Product prod = productService.getProductById(productId).getBody();
         Map<String, Object> response = new HashMap<>();
         response.put("product", prod);
@@ -64,11 +64,20 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/getProductByCompany/{companyId}")
+    @GetMapping("/getItemWiseMasterReport/{companyId}")
     @JsonView(Views.ParentView.class)
-    public ResponseEntity<Map<String, Object>> getProductByCompanyId(@RequestParam("companyId") int companyId)
-    {
-        List<Product> productList = productService.getProductByCompanyId(companyId).getBody();
+    public ResponseEntity<Map<String, Object>> getItemWiseMasterReport(@PathVariable("companyId") int companyId) {
+        List<Product> productList = productService.getItemWiseMasterReport(companyId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("product", productList);
+        response.put("status", true);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/getBrandWiseMasterReport/{brandId}")
+    @JsonView(Views.ParentView.class)
+    public ResponseEntity<Map<String, Object>> getBrandWiseMasterReport(@PathVariable int brandId) {
+        List<Product> productList = productService.getBrandWiseMasterReport(brandId);
         Map<String, Object> response = new HashMap<>();
         response.put("product", productList);
         response.put("status", true);
@@ -76,8 +85,7 @@ public class ProductController {
     }
 
     @GetMapping("/image/{productId}")
-    public ResponseEntity<UrlResource> getProductImage(@RequestParam("productId") int productId) throws Exception
-    {
+    public ResponseEntity<UrlResource> getProductImage(@PathVariable("productId") int productId) throws Exception {
         return productService.getProductImage(productId);
     }
 
