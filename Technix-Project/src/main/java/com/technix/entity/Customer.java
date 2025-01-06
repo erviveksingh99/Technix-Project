@@ -13,17 +13,16 @@ public class Customer  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "customerId")
     private int customerId; // primary key
 
-    private String full_name;
+    private String fullName;
     private String email;
-    private String phone_number;
-    private String company_name;
-    private String bussiness_type;
-    private String company_size;
+    private String phoneNumber;
+    private String companyName;
+    private String businessType;
+    private String companySize;
     private String country;
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
     // One Customer can have many Users
     @JsonIgnore

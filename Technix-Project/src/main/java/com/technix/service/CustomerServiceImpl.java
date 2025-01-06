@@ -81,7 +81,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         // Setting the creation timestamp
         LocalDateTime dateTime = LocalDateTime.now();
-        customer.setCreated_at(dateTime);
+        customer.setCreatedAt(dateTime);
 
         // Save the customer entity first
         Customer savedCustomer = null;
@@ -94,15 +94,15 @@ public class CustomerServiceImpl implements CustomerService {
         // Creating the User entity and setting fields from Customer
         User user = new User();
         user.setCustomerId(savedCustomer.getCustomerId());  // Set the customer foreign key relationship
-        user.setName(customer.getFull_name());
-        user.setOrganisationName(customer.getCompany_name());
+        user.setName(customer.getFullName());
+        user.setOrganisationName(customer.getCompanyName());
         user.setEmail(customer.getEmail());
         if (google == 0) {
             user.setPassword(passwordEncoder.encode(password));
         } else {
             user.setPassword(null);
         }
-        user.setPhoneNumber(customer.getPhone_number());
+        user.setPhoneNumber(customer.getPhoneNumber());
         user.setRoleId(roleId);
         user.setUserType("ADMIN");
 

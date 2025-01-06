@@ -1,6 +1,5 @@
 package com.technix.controller;
 
-import com.technix.dto.RegisterRequest;
 import com.technix.entity.Customer;
 import com.technix.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,12 +31,12 @@ public class CustomerController {
             @RequestParam("password") String password) throws Exception
     {
         Customer nc = new Customer();
-        nc.setFull_name(fullname);
+        nc.setFullName(fullname);
         nc.setEmail(email);
-        nc.setPhone_number(phoneNumber);
-        nc.setCompany_name(companyName);
-        nc.setBussiness_type(bussinessType);
-        nc.setCompany_size(companySize);
+        nc.setPhoneNumber(phoneNumber);
+        nc.setCompanyName(companyName);
+        nc.setBusinessType(bussinessType);
+        nc.setCompanySize(companySize);
         nc.setCountry(country);
 
         // Call service method to process sign-up
