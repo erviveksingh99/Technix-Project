@@ -42,9 +42,9 @@ public class Subscription {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public void startSubscriptionDate(int planValidity) {
+    public void startSubscriptionDate(int validity) {
         this.planStart = LocalDate.now();
-        this.planEnd = planStart.plusDays(planValidity);
+        this.planEnd = planStart.plusDays(validity);
         this.isTrail = true;
         this.status = true;
     }

@@ -20,7 +20,7 @@ public class SubscriptionController {
         Subscription subscription1 = subscriptionService.createSubscription(subscription);
         Map<String, Object> response = new HashMap<>();
         response.put("data", subscription1);
-        response.put("satus", true);
+        response.put("status", true);
         return ResponseEntity.ok(response);
     }
 
