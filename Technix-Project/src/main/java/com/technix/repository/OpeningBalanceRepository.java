@@ -15,4 +15,6 @@ public interface OpeningBalanceRepository extends JpaRepository<OpeningBalance, 
     @Transactional
     @Query("DELETE FROM OpeningBalance ob WHERE ob.ledgerId = :ledgerId")
     void deleteByLedgerId(@Param("ledgerId") int ledgerId);
+
+    boolean existsByFinancialPeriodId(int financialPeriodId);
 }

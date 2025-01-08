@@ -18,4 +18,6 @@ public interface TransactionMainRepository extends JpaRepository<TransactionMain
     int findMaxVoucherNo(@Param("voucherType") String voucherType, @Param("companyId") int companyId);
 
     Optional<TransactionMain> findByTransactionNo(int transactionNo);
+
+    boolean existsByFinancialPeriodId(int financialPeriodId);
 }

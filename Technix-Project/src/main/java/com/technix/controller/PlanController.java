@@ -15,15 +15,5 @@ import java.util.Map;
 @RequestMapping("/plan")
 public class PlanController {
 
-    @Autowired
-    private PlanService planService;
 
-    @GetMapping("/type/{planType}")
-    public Map<String, Object> GetPlans(@PathVariable("planType") String planType) {
-        List<Plan> plans = planService.getPlans(planType);
-        Map<String, Object> response = new HashMap<>();
-        response.put("data", plans);
-        response.put("status", true);
-        return response;
-    }
 }

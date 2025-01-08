@@ -11,8 +11,5 @@ import java.util.Optional;
 @Repository
 public interface SubscriptionRepository extends JpaRepository<Subscription, Integer> {
 
-    @Query("SELECT s " +
-            "FROM Subscription s " +
-            "WHERE s.customerId = :customerId AND s.status = true AND s.isTrail = true")
-    Optional<Subscription> findByCustomerIdAndStatusTrueAndIsTrailTrue(@Param("customerId") int customerId);
+
 }

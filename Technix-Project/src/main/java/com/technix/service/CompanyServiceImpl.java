@@ -8,6 +8,7 @@ import com.technix.entity.FinancialPeriod;
 import com.technix.repository.CompanyRepository;
 import com.technix.repository.CustomerRepository;
 import com.technix.repository.FinancialPeriodRepository;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +43,7 @@ public class CompanyServiceImpl implements CompanyService {
     @Autowired
     private FinancialPeriodRepository financialPeriodRepo;
 
+    @Transactional(rollbackOn = Exception.class)
     @Override
     public ResponseEntity<Map<String, Object>> createCompany(Company cmp, MultipartFile logo, int customerId, LocalDate startDate, LocalDate endDate) {
         Optional<Customer> customer = customerRepo.findById(customerId);

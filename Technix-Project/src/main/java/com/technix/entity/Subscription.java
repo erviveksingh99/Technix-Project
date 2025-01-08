@@ -12,41 +12,6 @@ import java.time.LocalDateTime;
 @Table(name = "tblcustomer_subscription")
 public class Subscription {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int subscriptionId;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", referencedColumnName = "customerId", insertable = false, updatable = false)
-    private Customer customer;
-
-    @Column(name = "customer_id", insertable = true, updatable = true, nullable = true)
-    private int customerId;  //FK
-
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "plan_id", referencedColumnName = "plan_id", insertable = false, updatable = false)
-    private Plan plan;
-
-    @Column(name = "plan_id", insertable = true, updatable = true)
-    private int planId;   //FK
-
-    private int planValidity;
-    private LocalDate planStart;
-    private LocalDate planEnd;
-    private boolean status;
-    private boolean isTrail;
-    private int createdBy;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    public void startSubscriptionDate(int validity) {
-        this.planStart = LocalDate.now();
-        this.planEnd = planStart.plusDays(validity);
-        this.isTrail = true;
-        this.status = true;
-    }
 }
 

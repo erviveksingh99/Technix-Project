@@ -10,15 +10,9 @@ import java.util.List;
 @Service
 public class PlanServiceImpl implements PlanService {
 
-    @Autowired
-    private PlanRepository planRepo;
 
     @Override
     public List<Plan> getPlans(String planType) {
-        try {
-            return planRepo.findPlansByType(planType);
-        } catch (Exception e) {
-            throw new IdNotFoundException("Plan type is invalid reason: " + e.getMessage());
-        }
+        return List.of();
     }
 }

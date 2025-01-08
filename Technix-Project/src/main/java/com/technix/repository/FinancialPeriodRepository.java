@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod, Integer> {
 
+    void deleteByCompanyId(int companyId);
 }
