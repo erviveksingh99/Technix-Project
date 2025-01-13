@@ -25,8 +25,8 @@ public class BillDTO {
     private double totalTaxes;
     private double roundOff;
     private double grandTotal;
-    private String notes;
     private int branchId;
+    private String notes;
     private int salesManId;
     private String salesMan;
     private String status;

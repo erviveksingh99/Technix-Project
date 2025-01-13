@@ -58,7 +58,8 @@ public class GlobalExceptionHandler {
         details.setStatusCode(ex.getStatusCode().value());  // Set HTTP status code
         details.setError(ex.getStatusCode().toString());  // Set error string (e.g., BAD_REQUEST)
         details.setException(ex.getClass().getName());  // Set the exception class name
-        details.setMessage(ex.getReason());  // Set the exception message (reason)
+        details.setMessage(ex.getReason());// Set the exception message (reason)
+        details.setStatus(false);
         details.setPath(request.getDescription(false).replace("uri=", ""));  // Extract URI path
         return new ResponseEntity<>(details, ex.getStatusCode());
     }

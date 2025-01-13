@@ -4,6 +4,7 @@ import com.technix.custome.IdNotFoundException;
 import com.technix.dto.BillDTO;
 import com.technix.dto.BillParticularsDTO;
 import com.technix.dto.BillTaxationDetailsDTO;
+import com.technix.dto.ProductSalesDTO;
 import com.technix.entity.*;
 import com.technix.repository.*;
 import jakarta.transaction.Transactional;
@@ -16,10 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -32,6 +30,8 @@ public class BillServiceImpl implements BillService {
     private TransactionMainRepository transactionMainRepo;
     private TransactionDetailsRepository transactionDetailsRepo;
 
+    @Autowired
+    private ProductRepository productRepo;
 
     @Autowired
     public BillServiceImpl(BillRepository billRepo,
@@ -81,7 +81,7 @@ public class BillServiceImpl implements BillService {
                 bill.setCompanyId(billDTO.getCompanyId());
                 bill.setBillDate(billDTO.getBillDate());
                 int maxInvoiceNo = billRepo.findMaxInvoiceNo(billDTO.getCompanyId()) + 1;  // Get max invoice no and increment
-                String newInvoiceNo = "TAX/24-25/" + maxInvoiceNo;  // Append the new number to the prefix
+                String newInvoiceNo = "TAX/25-26/" + maxInvoiceNo;  // Append the new number to the prefix
                 bill.setInvoiceNo(newInvoiceNo);  // Set the new invoice number
 
                 //  bill.setInvoiceNo("TAX/24-25/"+billRepo.findMaxInvoiceNo(billDTO.getCompanyId())+1);
@@ -109,7 +109,8 @@ public class BillServiceImpl implements BillService {
                 bill.setCreatedBy(billDTO.getCreatedBy());
                 Bill savedBill = null;
                 try {
-                    billRepo.save(bill);
+                    savedBill = billRepo.save(bill);
+                    log.debug("Check saved bill {} :", billRepo.save(bill));
                 } catch (Exception e) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bill data saving failed reason: " + e.getMessage());
                 }
@@ -440,6 +441,68 @@ public class BillServiceImpl implements BillService {
         } else {
             throw new IdNotFoundException("Company id doesn't exist");
         }
+    }
+
+    @Override
+    public List<Bill> getCashierWiseReport(int contactId, LocalDate startDate, LocalDate endDate) {
+        try {
+            return billRepo.cashierWiseReport(contactId, startDate, endDate);
+        } catch (Exception e) {
+            throw new IdNotFoundException("contact id not found reason: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<ProductSalesDTO> getTopSellingProduct(LocalDate startDate, LocalDate endDate, int companyId) {
+        List<ProductSalesDTO> productSalesDTOs = new ArrayList<>();
+        try {
+            List<Object[]> results = billParticularsRepo.findTopSellingProductsByCompanyId(startDate, endDate, companyId);
+            for (Object[] row : results) {
+
+                Integer productId = (Integer) row[0];
+                String productName = (String) row[1];
+                String brandName = (String) row[2];
+                String categoryName = (String) row[3];
+                Double totalQuantity = (Double) row[4];  // Ensure you cast to Double
+
+                productSalesDTOs.add(new ProductSalesDTO(productId, productName, brandName, categoryName, totalQuantity));
+            }
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Data not found reason: " + e.getMessage());
+        }
+        return productSalesDTOs;
+    }
+
+
+    @Override
+    public List<ProductSalesDTO> getLowestSellingProducts(LocalDate startDate, LocalDate endDate, int companyId) {
+        List<ProductSalesDTO> productSalesDTOs = new ArrayList<>();
+        try {
+            List<Object[]> results = billParticularsRepo.findLowestSellingProducts(startDate, endDate, companyId);
+            for (Object[] row : results) {
+
+                Integer productId = (Integer) row[0];
+                String productName = (String) row[1];
+                String brandName = (String) row[2];
+                String categoryName = (String) row[3];
+                Double totalQuantity = (Double) row[4];  // Ensure you cast to Double
+
+                productSalesDTOs.add(new ProductSalesDTO(productId, productName, brandName, categoryName, totalQuantity));
+            }
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Data not found reason: " + e.getMessage());
+        }
+        return productSalesDTOs;
+    }
+
+    @Override
+    public List<Product> getNoSellingProduct(LocalDate startDate, LocalDate endDate, int companyId) {
+        try {
+            return productRepo.findNoSellingProducts(startDate, endDate, companyId);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error fetching no selling products: " + e.getMessage());
+        }
+        //  return  null;
     }
 
     @Transactional

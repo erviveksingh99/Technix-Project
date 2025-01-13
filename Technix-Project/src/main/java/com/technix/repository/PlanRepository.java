@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface PlanRepository extends JpaRepository<Plan, Integer> {
-
-
+    // Dynamic query to fetch plans by planType (monthly or yearly)
+    @Query("SELECT p FROM Plan p WHERE p.planType = :planType")
+    List<Plan> findPlansByType(@Param("planType") String planType);
 }

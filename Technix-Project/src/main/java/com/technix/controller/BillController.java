@@ -1,11 +1,17 @@
 package com.technix.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.technix.dto.BillDTO;
+import com.technix.dto.ProductSalesDTO;
+import com.technix.dto.Views;
 import com.technix.entity.Bill;
+import com.technix.entity.Product;
 import com.technix.service.BillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,10 +59,9 @@ public class BillController {
         return ResponseEntity.ok(response);
     }
 
+
     @DeleteMapping("/delete/{billId}")
     public ResponseEntity<Map<String, Object>> deleteBillById(@PathVariable("billId") int billId) {
         return billService.deleteBillById(billId);
     }
-
-
 }
