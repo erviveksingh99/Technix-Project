@@ -8,6 +8,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.util.HashMap;
@@ -63,6 +64,15 @@ public class ContactsController {
     @GetMapping("/profilePic")
     public ResponseEntity<UrlResource> getContactProfilePic(@RequestParam("contactId") int contactId) throws MalformedURLException, FileNotFoundException {
         return contactsService.getContactProfilePic(contactId);
+    }
+
+    @GetMapping("/getRegisteredDealer/{taxationType}")
+    public ResponseEntity<Map<String, Object>> getRegisteredDealer(@PathVariable("taxationType") String taxationType) {
+        List<Contacts> contactsList = contactsService.getRegisteredDealer(taxationType);
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", contactsList);
+        response.put("status", true);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/delete")

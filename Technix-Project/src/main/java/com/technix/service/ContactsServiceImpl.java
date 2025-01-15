@@ -2,10 +2,7 @@ package com.technix.service;
 
 import com.technix.custome.IdNotFoundException;
 import com.technix.custome.PictureNotFoundException;
-import com.technix.entity.Account;
-import com.technix.entity.Contacts;
-import com.technix.entity.Ledger;
-import com.technix.entity.OpeningBalance;
+import com.technix.entity.*;
 import com.technix.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +20,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -101,7 +95,7 @@ public class ContactsServiceImpl implements ContactsService {
         openingBalance.setCompanyId(contacts.getCompanyId());
         openingBalance.setOpeningBalance(contacts.getOppeningBalance());
         openingBalance.setLedgerId(l1.getLedgerId());
-       // financialPeriodRepo
+        // financialPeriodRepo
         openingBalance.setFinancialPeriodId(1);
         openingBalance.setCrDr(contacts.getOppeningType());
         openingBalance.setOpeningBalanceDate(LocalDate.now());
@@ -351,6 +345,39 @@ public class ContactsServiceImpl implements ContactsService {
         } else {
             throw new PictureNotFoundException("Image not found in contacts");
         }
+    }
+
+    @Override
+    public List<Contacts> getRegisteredDealer(String taxationType) {
+        try {
+            List<Contacts> contactsList = contactsRepo.getRegisteredDealer(taxationType);
+            if (contactsList.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.OK, "Taxation type is invalid");
+            } else {
+                return contactsList;
+            }
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Customer taxation type is invalid");
+        }
+    }
+
+    @Override
+    public List<Map<String, Object>> getSalesReportGstWise(String taxationType) {
+        List<Object[]> results = contactsRepo.findTaxableContactsWithBillDetails(taxationType);
+
+        List<Map<String, Object>> salesReport = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("customerName", result[0]);
+            map.put("city", result[1]);
+            map.put("invoiceNo", result[2]);
+            map.put("invoiceDate", result[3]);
+            map.put("billAmount", result[4]);
+
+            salesReport.add(map);
+        }
+        return salesReport;
     }
 
     @Override

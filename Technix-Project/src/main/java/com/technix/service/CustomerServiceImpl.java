@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -173,74 +174,6 @@ public class CustomerServiceImpl implements CustomerService {
         return ResponseEntity.ok(response);  // Return HTTP 200 OK with the success message
     }
 
-
-   /*
-   @Override
-    public Customer getCustomerById(int id) {
-        return customerRepo.findById(id)
-                .orElseThrow(() -> new IdNotFoundException("Id not found"));
-    }
-
-
-    @Override
-    public ResponseEntity<?> customerLogin(RegisterRequest loginRequest, int google) throws Exception {
-        if (google == 1) {
-            try {
-                Optional<Customer> emailId = customerRepo.findByEmail(loginRequest.getEmail());
-                if (emailId.isPresent()) {
-                    Map<String, Object> response = new HashMap<>();
-                    Boolean status = true;
-                    response.put("Message", "Customer Login Successful");
-                    response.put("Status", status);
-                    response.put("Customer Details", emailId);
-                    return ResponseEntity.ok(response);
-                } else {
-                    throw new EmailNotFoundException("Email not found");
-                }
-            } catch (ResponseStatusException e) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Data base communication failed");
-            }
-        }
-
-        Optional<Customer> emailId = customerRepo.findByEmail(loginRequest.getEmail());
-        if (emailId.isPresent()) {
-
-            // Original
-            try {
-                authenticationManager.authenticate(
-                        new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-            } catch (BadCredentialsException e) {
-                // throw new Exception("Bad Credential", e);
-                throw new Exception("Password is invalid", e);
-            }
-
-            *//*
-            // Customized
-            try {
-                authenticationManager.authenticate(
-                        new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-            } catch (PasswordInvalidException e) {
-                throw new PasswordInvalidException("Password is invalid");
-            }
-             *//*
-
-            String token = jwtUtil.generateToken(loginRequest.getEmail());
-            Map<String, Object> response = new HashMap<>();
-            response.put("Message", "Login Successful");
-            response.put("Customer Details", emailId);
-            response.put("Token", token);
-            return ResponseEntity.ok(response);
-        } else {
-            throw new EmailNotFoundException("Email not found");
-        }
-    }
-
-    @Override
-    public Customer getCustomerByEmail(String email) {
-        return customerRepo.findByEmail(email)
-                .orElseThrow(() -> new EmailNotFoundException("Email not found"));
-    }
-   */
 
 }
 

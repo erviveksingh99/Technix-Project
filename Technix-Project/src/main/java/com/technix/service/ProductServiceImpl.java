@@ -12,7 +12,6 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -312,5 +311,4 @@ public class ProductServiceImpl implements ProductService {
             throw new IdNotFoundException("Id not found");
         }
     }
-
 }

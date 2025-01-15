@@ -7,6 +7,7 @@ import com.technix.entity.Bill;
 import com.technix.entity.Product;
 import com.technix.repository.ProductRepository;
 import com.technix.service.BillService;
+import com.technix.service.ContactsService;
 import com.technix.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,9 @@ public class ReportController {
 
     @Autowired
     private ProductRepository productRepo;
+
+    @Autowired
+    private ContactsService contactsService;
 
     @GetMapping("/getCashierWiseReport")
     public ResponseEntity<Map<String, Object>> getCashierWiseReport(@RequestParam("contactId") int contactId,
@@ -79,7 +83,7 @@ public class ReportController {
     public ResponseEntity<Map<String, Object>> getItemWiseMasterReport(@PathVariable("companyId") int companyId) {
         List<Product> productList = productService.getItemWiseMasterReport(companyId);
         Map<String, Object> response = new HashMap<>();
-        response.put("product", productList);
+        response.put("data", productList);
         response.put("status", true);
         return ResponseEntity.ok(response);
     }
@@ -89,7 +93,7 @@ public class ReportController {
     public ResponseEntity<Map<String, Object>> getBrandWiseMasterReport(@PathVariable int brandId) {
         List<Product> productList = productService.getBrandWiseMasterReport(brandId);
         Map<String, Object> response = new HashMap<>();
-        response.put("product", productList);
+        response.put("data", productList);
         response.put("status", true);
         return ResponseEntity.ok(response);
     }
@@ -99,7 +103,7 @@ public class ReportController {
     public ResponseEntity<Map<String, Object>> getProductGroupWise(@PathVariable int categoryId) {
         List<Product> productList = productService.getProductGroupWise(categoryId);
         Map<String, Object> response = new HashMap<>();
-        response.put("product", productList);
+        response.put("data", productList);
         response.put("status", true);
         return ResponseEntity.ok(response);
     }
@@ -109,10 +113,17 @@ public class ReportController {
     public ResponseEntity<Map<String, Object>> getHsnCodeWise(@PathVariable String HsnCode) {
         List<Product> productList = productService.getHsnCodeWise(HsnCode);
         Map<String, Object> response = new HashMap<>();
-        response.put("product", productList);
+        response.put("data", productList);
         response.put("status", true);
         return ResponseEntity.ok(response);
     }
 
-
+    @GetMapping("/getSalesReportGstWise/{taxationType}")
+    public ResponseEntity<Map<String, Object>> getSalesReportGstWise(@PathVariable String taxationType) {
+        List<Map<String, Object>> contactsList = contactsService.getSalesReportGstWise(taxationType);
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", contactsList);
+        response.put("status", true);
+        return ResponseEntity.ok(response);
+    }
 }

@@ -4,7 +4,6 @@ import com.technix.entity.Contacts;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.util.List;
@@ -21,6 +20,10 @@ public interface ContactsService {
     public ResponseEntity<List<Contacts>> getContactsByCompanyId(int companyId);
 
     public ResponseEntity<UrlResource> getContactProfilePic(int contactId) throws MalformedURLException, FileNotFoundException;
+
+    public  List<Contacts> getRegisteredDealer(String taxationType);
+
+    public List<Map<String, Object>> getSalesReportGstWise(String taxationType);
 
     public ResponseEntity<Map<String, Object>> deleteContacts(int contactId);
 }

@@ -157,7 +157,7 @@ public class Product {
     private String hsnCode;
 
     @JsonView(Views.ParentView.class)
-    private int recorderPoint;
+    private int reorderPoint;
 
     @JsonView(Views.ParentView.class)
     private double mrp;
