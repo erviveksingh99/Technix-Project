@@ -5,13 +5,16 @@ import com.technix.dto.ProductSalesDTO;
 import com.technix.dto.Views;
 import com.technix.entity.Bill;
 import com.technix.entity.Product;
+import com.technix.entity.TransactionDetails;
 import com.technix.repository.ProductRepository;
 import com.technix.service.BillService;
 import com.technix.service.ContactsService;
 import com.technix.service.ProductService;
+import com.technix.service.TransactionDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +35,9 @@ public class ReportController {
 
     @Autowired
     private ContactsService contactsService;
+
+    @Autowired
+    private TransactionDetailsService detailsService;
 
     @GetMapping("/getCashierWiseReport")
     public ResponseEntity<Map<String, Object>> getCashierWiseReport(@RequestParam("contactId") int contactId,
@@ -119,10 +125,31 @@ public class ReportController {
     }
 
     @GetMapping("/getSalesReportGstWise/{taxationType}")
-    public ResponseEntity<Map<String, Object>> getSalesReportGstWise(@PathVariable String taxationType) {
-        List<Map<String, Object>> contactsList = contactsService.getSalesReportGstWise(taxationType);
+    public ResponseEntity<Map<String, Object>> listOfSalesRegisteredCustomer(@PathVariable String taxationType) {
+        List<Map<String, Object>> contactsList = contactsService.listOfSalesRegisteredCustomer(taxationType);
         Map<String, Object> response = new HashMap<>();
         response.put("data", contactsList);
+        response.put("status", true);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/listOfVoucher")
+    public ResponseEntity<Map<String, Object>> getListOfVoucherReport(@RequestParam("startDate") LocalDate startDate,
+                                                                      @RequestParam("endDate") LocalDate endDate,
+                                                                      @RequestParam("voucherType") String voucherType) {
+        List<Map<String, Object>> listOfVoucher = detailsService.getListOfVoucherReport(startDate, endDate, voucherType);
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", listOfVoucher);
+        response.put("status", true);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/findAllVoucherTypeTransaction")
+    public ResponseEntity<Map<String, Object>> findAllVoucherTypeTransaction(@RequestParam("startDate") LocalDate startDate,
+                                                                             @RequestParam("endDate") LocalDate endDate) {
+        List<Map<String, Object>> listOfVoucher = detailsService.findAllVoucherTypeTransaction(startDate, endDate);
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", listOfVoucher);
         response.put("status", true);
         return ResponseEntity.ok(response);
     }

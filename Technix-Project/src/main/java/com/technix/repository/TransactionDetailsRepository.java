@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -39,5 +41,23 @@ public interface TransactionDetailsRepository extends JpaRepository<TransactionD
     List<Object[]> findMonthlyTransactionSummaryNative(@Param("ledgerId") int ledgerId,
                                                        @Param("startDate") String startDate,
                                                        @Param("endDate") String endDate);
+
+    @Query(value = "SELECT transaction_date, transaction_no, voucher_type, voucher_no, debit, credit, payment_mode, cheque_no, cheque_date, created_by, creation_date " +
+            "FROM tbltransaction " +
+            "WHERE voucher_type = :voucherType " +
+            "AND transaction_date BETWEEN :startDate AND :endDate", nativeQuery = true)
+    List<Object[]> findTransactionsByVoucherTypeAndDateRange(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("voucherType") String voucherType);
+
+
+    @Query(value = "SELECT transaction_date, transaction_no, voucher_type, voucher_no, debit, credit, payment_mode, cheque_no, cheque_date, created_by, creation_date " +
+            "FROM tbltransaction " +
+            "WHERE transaction_date BETWEEN :startDate AND :endDate", nativeQuery = true)
+    List<Object[]> findTransactionsByDateRange(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
+
 
 }

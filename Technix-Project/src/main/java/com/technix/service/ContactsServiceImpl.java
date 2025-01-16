@@ -348,7 +348,7 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     @Override
-    public List<Contacts> getRegisteredDealer(String taxationType) {
+    public List<Contacts> listOfRegisteredCustomer(String taxationType) {
         try {
             List<Contacts> contactsList = contactsRepo.getRegisteredDealer(taxationType);
             if (contactsList.isEmpty()) {
@@ -362,7 +362,7 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     @Override
-    public List<Map<String, Object>> getSalesReportGstWise(String taxationType) {
+    public List<Map<String, Object>> listOfSalesRegisteredCustomer(String taxationType) {
         List<Object[]> results = contactsRepo.findTaxableContactsWithBillDetails(taxationType);
 
         List<Map<String, Object>> salesReport = new ArrayList<>();

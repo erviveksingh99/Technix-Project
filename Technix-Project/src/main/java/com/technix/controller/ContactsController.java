@@ -66,9 +66,9 @@ public class ContactsController {
         return contactsService.getContactProfilePic(contactId);
     }
 
-    @GetMapping("/getRegisteredDealer/{taxationType}")
-    public ResponseEntity<Map<String, Object>> getRegisteredDealer(@PathVariable("taxationType") String taxationType) {
-        List<Contacts> contactsList = contactsService.getRegisteredDealer(taxationType);
+    @GetMapping("/listOfRegisteredCustomer/{taxationType}")
+    public ResponseEntity<Map<String, Object>> listOfRegisteredCustomer(@PathVariable("taxationType") String taxationType) {
+        List<Contacts> contactsList = contactsService.listOfRegisteredCustomer(taxationType);
         Map<String, Object> response = new HashMap<>();
         response.put("data", contactsList);
         response.put("status", true);

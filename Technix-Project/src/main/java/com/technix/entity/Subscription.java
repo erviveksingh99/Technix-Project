@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -41,15 +40,19 @@ public class Subscription {
     private boolean status;
     private boolean isTrial;
 
-//    @Transient
-//    private int daysLeft;
+    private int userCount;
+    private int invoiceCount;
+    private int companyCount;
+    private int branchCount;
+    private int emailsCount;
+    private int smsCount;
 
     private int createdBy;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public void startSubscriptionDate(int validity, boolean freeTrial) {
+    public void startSubscriptionDate(int validity) {
         this.planStart = LocalDate.now();
         this.planEnd = planStart.plusDays(validity);
     }

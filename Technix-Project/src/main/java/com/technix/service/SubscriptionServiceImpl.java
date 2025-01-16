@@ -48,8 +48,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             newSubscription.setPlanValidity(subscription.getPlanValidity());
             newSubscription.setTrial(true);
             newSubscription.setStatus(true);
+            newSubscription.setUserCount(subscription.getUserCount());
+            newSubscription.setInvoiceCount(subscription.getInvoiceCount());
+            newSubscription.setCompanyCount(subscription.getCompanyCount());
+            newSubscription.setBranchCount(subscription.getBranchCount());
+            newSubscription.setEmailsCount(subscription.getEmailsCount());
+            newSubscription.setSmsCount(subscription.getSmsCount());
 
-            newSubscription.startSubscriptionDate(subscription.getPlanValidity(), subscription.isTrial());
+            newSubscription.startSubscriptionDate(subscription.getPlanValidity());
             Subscription savedSubscription = subscriptionRepo.save(newSubscription);
 
             Optional<Plan> plan = planRepo.findById(savedSubscription.getPlanId());

@@ -26,4 +26,19 @@ public class Plan {
     private int userCount;
     private boolean isActive;
     private boolean trialAvailable;
+
+    @Column(columnDefinition = "MEDIUMTEXT")
+    private String planSupport;
+
+    private int invoiceCount;  // new column added here
+    private int companyCount;
+    private int branchCount;
+    private int emailsCount;
+    private int smsCount;
+    private double userRate;
+    private double invoiceRate;
+    private double companyRate;
+    private double branchRate;
+    private double emailsRate;
+    private double smsRate;
 }

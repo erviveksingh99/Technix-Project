@@ -28,4 +28,9 @@ public interface TransactionDetailsService {
     public ResponseEntity<Map<String, Object>> deleteTransactionDetailsById(int transactionDetailsId);
 
     public List<MonthlyTransactionSummary> getMonthlyTransactionSummary(int ledgerId, String startDate, String endDate);
+
+    public List<Map<String, Object>>  getListOfVoucherReport(LocalDate startDate, LocalDate endDate,  String voucherType);
+
+    public List<Map<String, Object>> findAllVoucherTypeTransaction(LocalDate startDate, LocalDate endDate);
+
 }

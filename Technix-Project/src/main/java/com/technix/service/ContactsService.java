@@ -21,9 +21,9 @@ public interface ContactsService {
 
     public ResponseEntity<UrlResource> getContactProfilePic(int contactId) throws MalformedURLException, FileNotFoundException;
 
-    public  List<Contacts> getRegisteredDealer(String taxationType);
+    public  List<Contacts> listOfRegisteredCustomer(String taxationType);
 
-    public List<Map<String, Object>> getSalesReportGstWise(String taxationType);
+    public List<Map<String, Object>> listOfSalesRegisteredCustomer(String taxationType);
 
     public ResponseEntity<Map<String, Object>> deleteContacts(int contactId);
 }

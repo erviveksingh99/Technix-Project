@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -196,7 +197,7 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
 
     @Override
     public List<MonthlyTransactionSummary> getMonthlyTransactionSummary(int ledgerId, String startDate, String endDate) {
-        List<Object[]> results = transactionDetailsRepo.findMonthlyTransactionSummaryNative(ledgerId,  startDate,  endDate);
+        List<Object[]> results = transactionDetailsRepo.findMonthlyTransactionSummaryNative(ledgerId, startDate, endDate);
         List<MonthlyTransactionSummary> summaries1 = new ArrayList<>();
 
         for (Object[] result : results) {
@@ -208,5 +209,56 @@ public class TransactionDetailsServiceImpl implements TransactionDetailsService 
             summaries1.add(summary);
         }
         return summaries1;
+    }
+
+    @Override
+    public List<Map<String, Object>> getListOfVoucherReport(LocalDate startDate, LocalDate endDate, String voucherType) {
+
+        List<Object[]> results = transactionDetailsRepo.findTransactionsByVoucherTypeAndDateRange(startDate, endDate, voucherType);
+
+        List<Map<String, Object>> voucherList = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("Transaction Date", result[0]);
+            map.put("Transaction No", result[1]);
+            map.put("Voucher Type", result[2]);
+            map.put("Voucher No", result[3]);
+            map.put("Debit", result[4]);
+            map.put("Credit", result[5]);
+            map.put("Payment Mode", result[6]);
+            map.put("Cheque No", result[7]);
+            map.put("Cheque Date", result[8]);
+            map.put("Created By", result[9]);
+            map.put("Creation Date", result[10]);
+
+            voucherList.add(map);
+        }
+        return voucherList;
+    }
+
+    @Override
+    public List<Map<String, Object>> findAllVoucherTypeTransaction(LocalDate startDate, LocalDate endDate) {
+        List<Object[]> results = transactionDetailsRepo.findTransactionsByDateRange(startDate, endDate);
+
+        List<Map<String, Object>> voucherList = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("Transaction Date", result[0]);
+            map.put("Transaction No", result[1]);
+            map.put("Voucher Type", result[2]);
+            map.put("Voucher No", result[3]);
+            map.put("Debit", result[4]);
+            map.put("Credit", result[5]);
+            map.put("Payment Mode", result[6]);
+            map.put("Cheque No", result[7]);
+            map.put("Cheque Date", result[8]);
+            map.put("Created By", result[9]);
+            map.put("Creation Date", result[10]);
+
+            voucherList.add(map);
+        }
+        return voucherList;
     }
 }
