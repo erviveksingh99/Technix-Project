@@ -31,5 +31,4 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
                                  @Param("endDate") LocalDate endDate);
 
 
-
 }

@@ -17,10 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.sound.midi.InvalidMidiDataException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -484,6 +481,28 @@ public class PurchaseServiceImpl implements PurchaseService {
         return purchaseRepo.findById(purchaseId).orElseThrow(() -> new IdNotFoundException("Purchase id not found"));
     }
 
+    @Override
+    public List<Map<String, Object>> getRegisteredPurchasedSupplier(String taxationType, LocalDate startDate, LocalDate endDate) {
+
+        List<Object[]> results = purchaseRepo.findPurchaseDetailsByTaxationTypeAndDateRange(taxationType, startDate, endDate);
+
+        List<Map<String, Object>> purchaseReport = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("Supplier Name", result[0]);
+            map.put("city", result[1]);
+            map.put("purchaseNo", result[2]);
+            map.put("invoiceDate", result[3]);
+            map.put("billAmount", result[4]);
+
+            purchaseReport.add(map);
+        }
+        log.debug("Checking data :{} ",purchaseReport);
+
+        return purchaseReport;
+    }
+
     @Transactional
     @Override
     public ResponseEntity<Map<String, Object>> deletePurchase(Integer purchaseId) {
@@ -493,7 +512,7 @@ public class PurchaseServiceImpl implements PurchaseService {
             purchaseExpensesRepo.deleteByPurchaseId(purchaseId);
             purchaseProductTaxesRepo.deleteByPurchaseId(purchaseId);
             purchaseRepo.deleteById(purchaseId);
-            Purchase purchase=existingPurchase.get();
+            Purchase purchase = existingPurchase.get();
             try {
                 transactionDetailsRepo.deleteByTransactionId(purchase.getTransactionId());
                 transactionMainRepo.deleteById(purchase.getTransactionId());

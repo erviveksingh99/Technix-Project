@@ -26,7 +26,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
                                         @Param("endDate") LocalDate endDate,
                                         @Param("companyId") int companyId);
 
-
     // Call the getStock function from MySQL using a native query
     @Query(value = "SELECT getStock(:productId) AS product_stock", nativeQuery = true)
     Double getProductStock(@Param("productId") Integer productId);
@@ -40,7 +39,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             "LEFT JOIN tblbrands b ON p.brand_id = b.brand_id " +
             "WHERE :openingStock < p.reorder_point AND p.product_id = :productId", nativeQuery = true)
     List<Object[]> findReorderLevel(@Param("openingStock") double openingStock, @Param("productId") int productId);
-
 
     @Query(value = "SELECT p.product_id AS productId, p.product_name AS productName, " +
             "c.category_name AS categoryName, b.brand_name AS brandName, " +

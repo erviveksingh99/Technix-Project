@@ -13,18 +13,26 @@ public class Plan {
     @Column(name = "plan_id")
     private int planId;
 
+    @Column(length = 25)
     private String planName;
+
+    @Column(length = 25)
     private String planType;  // Monthly/Yearly
 
     @Lob
     private String features;
 
+    @Column(length = 155)
     private String description;
+
     private Double price;
+
+    @Column(length = 25)
     private String currency;
     private int validity;
     private int userCount;
-    private boolean isActive;
+
+    @Column( columnDefinition = "tinyint default 0")
     private boolean trialAvailable;
 
     @Column(columnDefinition = "MEDIUMTEXT")

@@ -16,19 +16,6 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int subscriptionId;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", referencedColumnName = "customerId", insertable = false, updatable = false)
-    private Customer customer;
-
-    @Column(name = "customer_id", insertable = true, updatable = true, nullable = true)
-    private int customerId;  //FK
-
-    // @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "plan_id", referencedColumnName = "plan_id", insertable = false, updatable = false)
-    private Plan plan;
-
     @Column(name = "plan_id", insertable = true, updatable = true)
     private int planId;   //FK
 
@@ -36,8 +23,10 @@ public class Subscription {
     private LocalDate planStart;
     private LocalDate planEnd;
 
-    @Column(name = "status", columnDefinition = "tinyint default 1")
+    @Column(columnDefinition = "tinyint default 0")
     private boolean status;
+
+    @Column(columnDefinition = "tinyint default 0")
     private boolean isTrial;
 
     private int userCount;
@@ -51,6 +40,20 @@ public class Subscription {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", referencedColumnName = "customerId", insertable = false, updatable = false)
+    private Customer customer;
+
+    @Column(name = "customer_id", insertable = true, updatable = true, nullable = true)
+    private int customerId;  //FK
+
+    // @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "plan_id", referencedColumnName = "plan_id", insertable = false, updatable = false)
+    private Plan plan;
 
     public void startSubscriptionDate(int validity) {
         this.planStart = LocalDate.now();

@@ -5,16 +5,11 @@ import com.technix.dto.ProductSalesDTO;
 import com.technix.dto.Views;
 import com.technix.entity.Bill;
 import com.technix.entity.Product;
-import com.technix.entity.TransactionDetails;
 import com.technix.repository.ProductRepository;
-import com.technix.service.BillService;
-import com.technix.service.ContactsService;
-import com.technix.service.ProductService;
-import com.technix.service.TransactionDetailsService;
+import com.technix.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +33,9 @@ public class ReportController {
 
     @Autowired
     private TransactionDetailsService detailsService;
+
+    @Autowired
+    private PurchaseService purchaseService;
 
     @GetMapping("/getCashierWiseReport")
     public ResponseEntity<Map<String, Object>> getCashierWiseReport(@RequestParam("contactId") int contactId,
@@ -150,6 +148,15 @@ public class ReportController {
         List<Map<String, Object>> listOfVoucher = detailsService.findAllVoucherTypeTransaction(startDate, endDate);
         Map<String, Object> response = new HashMap<>();
         response.put("data", listOfVoucher);
+        response.put("status", true);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/RegisteredPurchasedSupplier")
+    public ResponseEntity<Map<String, Object>> getRegisteredPurchasedSupplier(@RequestParam("taxationType") String taxationType, @RequestParam("startDate") LocalDate startDate, @RequestParam("endDate") LocalDate endDate) {
+        List<Map<String, Object>> listOfRegisteredSupplier = purchaseService.getRegisteredPurchasedSupplier(taxationType, startDate, endDate);
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", listOfRegisteredSupplier);
         response.put("status", true);
         return ResponseEntity.ok(response);
     }
