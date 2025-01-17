@@ -4,7 +4,7 @@ import com.technix.entity.Subscription;
 
 public interface SubscriptionService {
 
-    public Subscription createTrial(Subscription subscription);
+    Subscription createTrial(Subscription subscription);
 
-    public Subscription getActiveSubscription(int customerId);
+    Subscription getActiveSubscription(int customerId);
 }

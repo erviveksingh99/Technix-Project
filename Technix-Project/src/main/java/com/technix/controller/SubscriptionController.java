@@ -1,19 +1,38 @@
 package com.technix.controller;
 
+import com.technix.entity.Plan;
 import com.technix.entity.Subscription;
+import com.technix.service.PlanService;
 import com.technix.service.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/subscription")
 public class SubscriptionController {
 
+    private final SubscriptionService subscriptionService;
+
+    private final PlanService planService;
+
     @Autowired
-    private SubscriptionService subscriptionService;
+    public SubscriptionController(SubscriptionService subscriptionService, PlanService planService){
+        this.subscriptionService = subscriptionService;
+        this.planService = planService;
+    }
+
+    @GetMapping("/type/{planType}")
+    public Map<String, Object> GetPlans(@PathVariable("planType") String planType) {
+        List<Plan> plans = planService.getPlans(planType);
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", plans);
+        response.put("status", true);
+        return response;
+    }
 
     @PostMapping("/create")
     public ResponseEntity<Map<String, Object>> createTrial(@RequestBody Subscription subscription) {
@@ -32,4 +51,5 @@ public class SubscriptionController {
         response.put("status", true);
         return ResponseEntity.ok(response);
     }
+
 }

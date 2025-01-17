@@ -5,5 +5,5 @@ import com.technix.entity.Plan;
 import java.util.List;
 
 public interface PlanService {
-    public List<Plan> getPlans(String planType);
+    List<Plan> getPlans(String planType);
 }

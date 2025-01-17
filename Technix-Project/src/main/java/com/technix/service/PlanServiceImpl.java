@@ -9,8 +9,13 @@ import java.util.List;
 
 @Service
 public class PlanServiceImpl implements PlanService {
+
+    private final PlanRepository planRepo;
+
     @Autowired
-    private PlanRepository planRepo;
+    public PlanServiceImpl(PlanRepository planRepo){
+        this.planRepo = planRepo;
+    }
 
     @Override
     public List<Plan> getPlans(String planType) {

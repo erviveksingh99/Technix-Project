@@ -14,20 +14,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 @Slf4j
 public class SubscriptionServiceImpl implements SubscriptionService {
 
-    @Autowired
-    private SubscriptionRepository subscriptionRepo;
+    private final SubscriptionRepository subscriptionRepo;
+
+    private final CustomerRepository customerRepo;
+
+    private final PlanRepository planRepo;
 
     @Autowired
-    private CustomerRepository customerRepo;
-
-    @Autowired
-    private PlanRepository planRepo;
+    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepo, CustomerRepository customerRepo, PlanRepository planRepo){
+        this.subscriptionRepo = subscriptionRepo;
+        this.customerRepo = customerRepo;
+        this.planRepo = planRepo;
+    }
 
     @Transactional
     @Override
@@ -62,7 +68,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             if (plan.isPresent()) {
                 Plan newPlan = new Plan();
                 newPlan.setTrialAvailable(savedSubscription.isTrial());
-                newPlan.setActive(savedSubscription.isStatus());
                 planRepo.save(newPlan);
             }
             return savedSubscription;

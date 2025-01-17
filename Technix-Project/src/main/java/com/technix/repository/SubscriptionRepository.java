@@ -19,18 +19,12 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Inte
         //pending: AND s.isTrial = true
     Optional<Subscription> findByCustomerIdAndStatusTrueAndIsTrailTrue(@Param("customerId") int customerId);
 
-   /* @Query("SELECT s " +
-            "FROM Subscription s " +
-            "WHERE s.customerId = :customerId AND s.status = true")  //pending: AND s.isTrial = true
-    Optional<Subscription> findByCustomerIdAndStatusTrueAndIsTrailTrue(@Param("customerId") int customerId);
-*/
-
     @Query(value = "SELECT * FROM tblcustomer_subscription WHERE customer_id = :customerId AND status=true", nativeQuery = true)
     Subscription findByCustomerId(@Param("customerId") int customerId);
 
     @Transactional
     @Modifying
-    @Query(value = "Update tblcustomer_subscription set status = false WHERE customer_id = :customerId", nativeQuery = true)
+    @Query(value = "Update tblcustomer_subscription set status = false WHERE customer_id = :customerId and status = true", nativeQuery = true)
     void inactiveAllPlans(@Param("customerId") int customerId);
 
 }
