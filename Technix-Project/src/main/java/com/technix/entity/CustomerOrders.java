@@ -14,7 +14,47 @@ public class CustomerOrders {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
+
+    @Column(length = 25)
+    private String orderId;
+
+    private LocalDate orderDate;
+    private Integer planId;
+    private Double planRate;
+    private Integer planValidity;
+    private Double planValue;
+    private Integer userCount;
+    private Double userRate;
+    private Double userValue;
+    private Integer invoiceCount;
+    private Double invoiceRate;
+    private Double invoiceValue;
+    private Integer companyCount;
+    private Double companyRate;
+    private Double companyValue;
+    private Integer branchCount;
+    private Double branchRate;
+    private Double branchValue;
+    private Integer emailCount;
+    private Double emailValue;
+    private Integer smsCount;
+    private Double smsRate;
+    private Double smsValue;
+    private Double subTotal;
+    private Double discount;
+    private Double totalAmount;
+    private Double taxableValue;
+    private Double taxAmount;
+    private String orderCurrency;
+
+    @Column(name = "status", columnDefinition = "tinyint default 1")
+    private String status;
+    private String transactionStatus;
+    private String referenceNo;
+    private String paymentMode;
+    private String transactionMessage;
+    private Integer createdBy;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -22,47 +62,7 @@ public class CustomerOrders {
     private Customer customer;
 
     @Column(name = "customer_id", insertable = true, updatable = true, nullable = true)
-    private int customerId;  //FK
-
-    private String orderId;
-    private LocalDate orderDate;
-    private int planId;
-    private double planRate;
-    private int planValidity;
-    private double planValue;
-    private int userCount;
-    private double userRate;
-    private double userValue;
-    private int invoiceCount;
-    private double invoiceRate;
-    private double invoiceValue;
-    private int companyCount;
-    private double companyRate;
-    private double companyValue;
-    private int branchCount;
-    private double branchRate;
-    private double branchValue;
-    private int emailCount;
-    private double emailValue;
-    private  int smsCount;
-    private double smsRate;
-    private double smsValue;
-    private double subTotal;
-    private  double discount;
-    private  double totalAmount;
-    private double taxableValue;
-    private double taxAmount;
-    private String orderCurrency;
-
-//    @Column(name = "status", columnDefinition = "tinyint default 1")
-//    private boolean status;
-
-    private String status;
-    private String transactionStatus;
-    private String referenceNo;
-    private String paymentMode;
-    private String transactionMessage;
-    private int createdBy;
+    private Integer customerId;  //FK
 
     @CreationTimestamp
     private LocalDateTime createdAt;

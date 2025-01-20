@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 import javax.sound.midi.InvalidMidiDataException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -484,7 +485,12 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     public List<Map<String, Object>> getRegisteredPurchasedSupplier(String taxationType, LocalDate startDate, LocalDate endDate) {
 
-        List<Object[]> results = purchaseRepo.findPurchaseDetailsByTaxationTypeAndDateRange(taxationType, startDate, endDate);
+        List<Object[]> results = null;
+        try {
+            results = purchaseRepo.findPurchaseDetailsByTaxationTypeAndDateRange(taxationType, startDate, endDate);
+        } catch (ResponseStatusException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Data finding failed reason: " + ex.getMessage());
+        }
 
         List<Map<String, Object>> purchaseReport = new ArrayList<>();
 
@@ -498,9 +504,93 @@ public class PurchaseServiceImpl implements PurchaseService {
 
             purchaseReport.add(map);
         }
-        log.debug("Checking data :{} ",purchaseReport);
-
         return purchaseReport;
+    }
+
+    @Override
+    public List<Map<String, Object>> getPartyWiseProductPurchaseBill(String partyName, String productName, LocalDate startDate, LocalDate endDate) {
+
+        List<Object[]> results = null;
+        try {
+            results = purchaseRepo.findPurchaseDetailsByPartyNameProductNameAndDateRange(partyName, productName, startDate, endDate);
+        } catch (ResponseStatusException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Data finding failed reason: " + ex.getMessage());
+        }
+
+        List<Map<String, Object>> purchaseReport = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("Date", result[0]);
+            map.put("SupInvoiceNo", result[1]);
+            map.put("SupInvoiceDate", result[2]);
+            map.put("SupplierName", result[3]);
+            map.put("ProductName", result[4]);
+            map.put("Qty", result[5]);
+            map.put("Unit", result[6]);
+            map.put("Rate", result[7]);
+            map.put("TxblAmt", result[8]);
+            map.put("TaxPercent", result[9]);
+            map.put("TaxAmt", result[10]);
+            map.put("NetAmt", result[11]);
+
+            purchaseReport.add(map);
+        }
+        return purchaseReport;
+    }
+
+    @Override
+    public List<Map<String, Object>> getAllPartyWiseProductPurchaseBill(LocalDate startDate, LocalDate endDate) {
+        List<Object[]> results = null;
+        try {
+            results = purchaseRepo.findAllPurchaseDetailsByPartyProductAndDateRange(startDate, endDate);
+        } catch (ResponseStatusException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Data finding failed reason: " + ex.getMessage());
+        }
+
+        List<Map<String, Object>> purchaseReport = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("Date", result[0]);
+            map.put("SupInvoiceNo", result[1]);
+            map.put("SupInvoiceDate", result[2]);
+            map.put("SupplierName", result[3]);
+            map.put("ProductName", result[4]);
+            map.put("Qty", result[5]);
+            map.put("Unit", result[6]);
+            map.put("Rate", result[7]);
+            map.put("TxblAmt", result[8]);
+            map.put("TaxPercent", result[9]);
+            map.put("TaxAmt", result[10]);
+            map.put("NetAmt", result[11]);
+
+            purchaseReport.add(map);
+        }
+        return purchaseReport;
+    }
+
+    @Override
+    public List<Purchase> purchaseRegisterProductWise(int productId) {
+        try {
+            return purchaseRepo.findByProductId(productId);
+        } catch (Exception e) {
+            throw new IdNotFoundException("Product id not found " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Purchase> purchaseRegisterCategoryWise(int categoryId) {
+        try {
+            return purchaseRepo.findByGroupWise(categoryId);
+        } catch (Exception e) {
+            throw new IdNotFoundException("Category id not found " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Purchase> PurchaseRegisterBrandWise(int brandId) {
+        return List.of();
     }
 
     @Transactional

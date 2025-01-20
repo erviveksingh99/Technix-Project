@@ -28,5 +28,8 @@ public interface BillService {
 
     public List<Product> getNoSellingProduct(LocalDate startDate, LocalDate endDate,int companyId);
 
+
+    public List<Bill> salesRegisterProductWise(int productId);
+
     public ResponseEntity<Map<String, Object>> deleteBillById(int billId);
 }

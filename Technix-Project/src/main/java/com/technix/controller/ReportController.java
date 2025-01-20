@@ -5,11 +5,13 @@ import com.technix.dto.ProductSalesDTO;
 import com.technix.dto.Views;
 import com.technix.entity.Bill;
 import com.technix.entity.Product;
+import com.technix.entity.Purchase;
 import com.technix.repository.ProductRepository;
 import com.technix.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -157,6 +159,47 @@ public class ReportController {
         List<Map<String, Object>> listOfRegisteredSupplier = purchaseService.getRegisteredPurchasedSupplier(taxationType, startDate, endDate);
         Map<String, Object> response = new HashMap<>();
         response.put("data", listOfRegisteredSupplier);
+        response.put("status", true);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/getPartyWiseProdPurBill")
+    public ResponseEntity<Map<String, Object>> getPartyWiseProductPurchaseBill(@RequestParam("partyName") String partyName,
+                                                                               @RequestParam("productName") String productName,
+                                                                               @RequestParam("startDate") LocalDate startDate,
+                                                                               @RequestParam("endDate") LocalDate endDate) {
+        List<Map<String, Object>> listOfPartyWiseProductPurBill = purchaseService.getPartyWiseProductPurchaseBill(partyName, productName, startDate, endDate);
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", listOfPartyWiseProductPurBill);
+        response.put("status", true);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/getAllPartyWiseProductPurchaseBill")
+    public ResponseEntity<Map<String, Object>> getAllPartyWiseProductPurchaseBill(@RequestParam("startDate") LocalDate startDate, @RequestParam("endDate") LocalDate endDate) {
+        List<Map<String, Object>> listOfAllPartyWiseProductPurBill = purchaseService.getAllPartyWiseProductPurchaseBill(startDate, endDate);
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", listOfAllPartyWiseProductPurBill);
+        response.put("status", true);
+        return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/getPurchaseRegisterProductWise/{productId}")
+    public ResponseEntity<Map<String, Object>> purchaseRegisterProductWise(@PathVariable int productId) {
+        List<Purchase> listOfDataProductWise = purchaseService.purchaseRegisterProductWise(productId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", listOfDataProductWise);
+        response.put("status", true);
+        return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/getPurchaseRegisterCategoryWise/{categoryId}")
+    public ResponseEntity<Map<String, Object>> purchaseRegisterCategoryWise(@PathVariable int categoryId) {
+        List<Purchase> listOfDataCategoryWise = purchaseService.purchaseRegisterCategoryWise(categoryId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", listOfDataCategoryWise);
         response.put("status", true);
         return ResponseEntity.ok(response);
     }

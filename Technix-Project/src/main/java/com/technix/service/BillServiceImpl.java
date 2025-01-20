@@ -505,6 +505,11 @@ public class BillServiceImpl implements BillService {
         //  return  null;
     }
 
+    @Override
+    public List<Bill> salesRegisterProductWise(int productId) {
+        return List.of();
+    }
+
     @Transactional
     @Override
     public ResponseEntity<Map<String, Object>> deleteBillById(int billId) {
